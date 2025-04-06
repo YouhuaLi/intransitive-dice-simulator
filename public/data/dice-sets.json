@@ -1,0 +1,148 @@
+{
+    "classic": {
+        "name": "Classic Set",
+        "players": 2,
+        "diceCount": 3,
+        "dice": {
+            "A": [2, 2, 4, 4, 9, 9],
+            "B": [1, 1, 6, 6, 8, 8],
+            "C": [3, 3, 5, 5, 7, 7]
+        },
+        "beatRelationship": {
+            "A": ["B"],
+            "B": ["C"],
+            "C": ["A"]
+        },
+        "lostRelationship": {
+            "B": ["A"],
+            "C": ["B"],
+            "A": ["C"]
+        },
+        "info": "<p>The classic set demonstrates the basic intransitive property with three simple dice.</p><p>Each die will win against the next with approximately 5/9 (56%) probability.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 5/9 of the time (56%)",
+            "B-C": "Die B beats Die C about 5/9 of the time (56%)",
+            "C-A": "Die C beats Die A about 5/9 of the time (56%)"
+        }
+    },
+    "efron": {
+        "name": "Efron's Dice",
+        "players": 2,
+        "diceCount": 4,
+        "dice": {
+            "A": [4, 4, 4, 4, 0, 0],
+            "B": [3, 3, 3, 3, 3, 3],
+            "C": [6, 6, 2, 2, 2, 2],
+            "D": [5, 5, 5, 1, 1, 1]
+        },
+        "beatRelationship": {
+            "A": ["B"],
+            "B": ["C"],
+            "C": ["D"],
+            "D": ["A"]
+        },
+        "lostRelationship": {
+            "B": ["A"],
+            "C": ["B"],
+            "D": ["C"],
+            "A": ["D"]
+        },
+        "info": "<p>Created by mathematician Bradley Efron, these four dice form a non-transitive set.</p><p>Die A beats B, Die B beats C, Die C beats D, but Die D beats A, creating a cycle.</p><p>Each die beats the next with a 2/3 (67%) probability.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 2/3 of the time (67%)",
+            "B-C": "Die B beats Die C about 2/3 of the time (67%)",
+            "C-D": "Die C beats Die D about 2/3 of the time (67%)",
+            "D-A": "Die D beats Die A about 2/3 of the time (67%)"
+        }
+    },
+    "grime": {
+        "name": "Grime Dice",
+        "players": 3,
+        "diceCount": 4,
+        "dice": {
+            "A": [5, 5, 9, 1, 1, 1],
+            "B": [6, 6, 6, 2, 2, 2],
+            "C": [7, 7, 3, 3, 3, 3],
+            "D": [8, 4, 4, 4, 4, 4]
+        },
+        "beatRelationship": {
+            "A": ["B", "C"],
+            "B": ["C", "D"],
+            "C": ["D", "A"],
+            "D": ["A", "B"]
+        },
+        "lostRelationship": {
+            "BC": ["A"],
+            "CD": ["B"],
+            "AD": ["C"],
+            "AB": ["D"]
+        },
+        "info": "<p>Created by mathematician James Grime, these dice demonstrate an interesting property.</p><p>Not only is there intransitivity (A beats B, B beats C, C beats D, D beats A), but there's a non-transitive sub-loop: A beats C, and B beats D.</p><p>The winning probability is about 2/3 (67%) for each comparison.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 2/3 of the time (67%)",
+            "B-C": "Die B beats Die C about 2/3 of the time (67%)",
+            "C-D": "Die C beats Die D about 2/3 of the time (67%)",
+            "D-A": "Die D beats Die A about 2/3 of the time (67%)"
+        }
+    },
+    "oskar": {
+        "name": "Oskar Dice",
+        "players": 3,
+        "diceCount": 5,
+        "dice": {
+            "A": [1, 2, 5, 6, 7, 9],
+            "B": [1, 3, 4, 5, 8, 9],
+            "C": [2, 3, 4, 7, 8, 9],
+            "D": [1, 2, 6, 7, 8, 9],
+            "E": [3, 4, 5, 6, 7, 8]
+        },
+        "beatRelationship": {
+            "A": ["B", "C"],
+            "B": ["C", "D"],
+            "C": ["D", "E"],
+            "D": ["E", "A"],
+            "E": ["A", "B"]
+        },
+        "lostRelationship": {
+            "BC": ["A"],
+            "CD": ["B"],
+            "DE": ["C"],
+            "AE": ["D"],
+            "AB": ["E"]
+        },
+        "info": "<p>A set of five intransitive dice with a complex relationship pattern.</p><p>The winning pattern creates a pentagram: A beats B and C, B beats C and D, C beats D and E, D beats E and A, E beats A and B.</p><p>This creates multiple non-transitive loops and demonstrates how intricate these relationships can be.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 5/9 of the time (56%)",
+            "B-C": "Die B beats Die C about 5/9 of the time (56%)",
+            "C-D": "Die C beats Die D about 5/9 of the time (56%)",
+            "D-E": "Die D beats Die E about 5/9 of the time (56%)",
+            "E-A": "Die E beats Die A about 5/9 of the time (56%)"
+        }
+    },
+    "miwin": {
+        "name": "Miwin's Dice",
+        "players": 2,
+        "diceCount": 3,
+        "dice": {
+            "A": [1, 2, 5, 6, 7, 9],
+            "B": [1, 3, 4, 5, 8, 9],
+            "C": [2, 3, 4, 6, 7, 8]
+        },
+        "beatRelationship": {
+            "A": ["B"],
+            "B": ["C"],
+            "C": ["A"]
+        },
+        "lostRelationship": {
+            "B": ["A"],
+            "C": ["B"],
+            "A": ["C"]
+        },
+        "info": "<p>Miwin's dice are a set of three dice that form an intransitive loop.</p><p>Die A beats die B with probability 17/36 (47%), Die B beats Die C with probability 17/36 (47%), and Die C beats Die A with probability 17/36 (47%).</p><p>What makes this set special is the equal probability (17/36) for each comparison, creating perfect symmetry.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 17/36 of the time (47%)",
+            "B-C": "Die B beats Die C about 17/36 of the time (47%)",
+            "C-A": "Die C beats Die A about 17/36 of the time (47%)"
+        }
+    }
+}

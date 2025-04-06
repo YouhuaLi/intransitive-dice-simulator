@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intransitive Dice Demonstration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="sidebar">
+            <h2>Select Dice Set</h2>
+            <ul class="dice-sets">
+                <li class="dice-set active" data-set="classic">
+                    <h3>Classic Set</h3>
+                    <p>The standard intransitive set</p>
+                </li>
+                <li class="dice-set" data-set="efron">
+                    <h3>Efron's Dice</h3>
+                    <p>Created by mathematician Bradley Efron</p>
+                </li>
+                <li class="dice-set" data-set="grime">
+                    <h3>Grime Dice</h3>
+                    <p>Created by mathematician James Grime</p>
+                </li>
+                <li class="dice-set" data-set="oskar">
+                    <h3>Oskar Dice</h3>
+                    <p>A 5-dice intransitive set</p>
+                </li>
+                <li class="dice-set" data-set="miwin">
+                    <h3>Miwin's Dice</h3>
+                    <p>Another interesting intransitive set</p>
+                </li>
+            </ul>
+            <div class="dice-info">
+                <h3>About Current Set</h3>
+                <div id="current-dice-info">
+                    <p>The classic set demonstrates the basic intransitive property with three simple dice.</p>
+                    <p>Each die will win against the next with approximately 5/9 (56%) probability.</p>
+                </div>
+            </div>
+            
+            <div class="die-details">
+                <h3>Die Details</h3>
+                <div id="selected-die-details">
+                    <p class="die-select-prompt">Click on a die to see its details</p>
+                    <div id="die-details-content" style="display: none;">
+                        <h4 id="selected-die-name">Die A</h4>
+                        <div class="selected-die-current">
+                            <p>Current Value: <span id="selected-die-value">?</span></p>
+                        </div>
+                        <div class="selected-die-faces">
+                            <p>Face Values:</p>
+                            <ul id="selected-die-faces-list"></ul>
+                        </div>
+                        <div class="selected-die-stats">
+                            <p>Statistics:</p>
+                            <div id="selected-die-stats-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="container">
+                <h1>Intransitive Dice Demonstration</h1>
+                <div class="current-set-name">
+                    <h2 id="current-set-title">Classic Set</h2>
+                </div>
+                <div id="error-message" class="error-message"></div>
+                <div class="explanation">
+                    <p>Intransitive dice are sets of dice where die A tends to beat die B, die B tends to beat die C, 
+                    and die C tends to beat die A, creating a rock-paper-scissors-like cycle.</p>
+                    <p class="user-tip"><strong>Pro tip:</strong> Click on dice to select them. When you select the appropriate number of dice based on the set's player count (highlighted in the sidebar), 
+                    the system will highlight a die that can beat all your selections for simulation.</p>
+                </div>
+                
+                <div class="dice-container" id="dice-container">
+                    <div class="die" id="dieA">
+                        <h2>Die A</h2>
+                        <div class="die-face">?</div>
+                        <div class="die-values">Values: [3,3,3,3,3,6]</div>
+                    </div>
+                    <div class="die" id="dieB">
+                        <h2>Die B</h2>
+                        <div class="die-face">?</div>
+                        <div class="die-values">Values: [2,2,2,5,5,5]</div>
+                    </div>
+                    <div class="die" id="dieC">
+                        <h2>Die C</h2>
+                        <div class="die-face">?</div>
+                        <div class="die-values">Values: [1,4,4,4,4,4]</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="rollButton">Roll Dice</button>
+                    <button id="resetButton">Reset</button>
+                    <button id="simulateButton">Simulate 1000 Rolls</button>
+                </div>
+                
+                <div class="results">
+                    <h2>Results</h2>
+                    <div id="results-container">
+                        <div class="result-row">
+                            <div>A vs B: <span id="AvsBWins">0</span> - <span id="BvsAWins">0</span></div>
+                            <div class="win-percentage">(<span id="AvsB">0</span>%)</div>
+                        </div>
+                        <div class="result-row">
+                            <div>B vs C: <span id="BvsCWins">0</span> - <span id="CvsBWins">0</span></div>
+                            <div class="win-percentage">(<span id="BvsC">0</span>%)</div>
+                        </div>
+                        <div class="result-row">
+                            <div>C vs A: <span id="CvsAWins">0</span> - <span id="AvsCWins">0</span></div>
+                            <div class="win-percentage">(<span id="CvsA">0</span>%)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
