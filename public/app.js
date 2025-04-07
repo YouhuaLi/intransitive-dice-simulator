@@ -128,6 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         highlightedDice = [];
         
+        // Show all dice and results initially
+        showAllDiceAndResults();
+        
         // If we have (players-1) dice selected, find the winning die
         if (selectedDice.length === playerCount - 1 && playerCount > 1) {
             const winningDie = findWinningDie(selectedDice);
@@ -140,6 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         diceElements[key].classList.add('highlighted');
                     }
                 });
+                
+                // Hide unselected dice in the graph
+                hideUnselectedDice(highlightedDice);
+                
+                // Hide unrelated results in the results table
+                updateResultsVisibility(highlightedDice);
                 
                 // Display notification
                 const notification = document.createElement('div');
@@ -521,8 +530,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // If we have highlighted dice, use only those
         if (highlightedDice.length > 0) {
             diceToRoll = highlightedDice;
+            
+            // Hide unselected dice
+            hideUnselectedDice(highlightedDice);
+            
+            // Update results visibility
+            updateResultsVisibility(highlightedDice);
         } else {
             diceToRoll = Object.keys(currentDice);
+            
+            // Show all dice and results
+            showAllDiceAndResults();
         }
         
         const rolls = {};
@@ -686,6 +704,110 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // Hide unselected dice in the graph
+    function hideUnselectedDice(visibleDice) {
+        const allDiceKeys = Object.keys(currentDice);
+        
+        // Hide unselected dice nodes
+        allDiceKeys.forEach(key => {
+            if (!visibleDice.includes(key) && diceElements[key]) {
+                diceElements[key].classList.add('hidden');
+            }
+        });
+        
+        // Hide relationships between unselected dice
+        const relationshipArrows = document.querySelectorAll('.relationship-arrow');
+        const resultCircles = document.querySelectorAll('.result-circle');
+        const resultTexts = document.querySelectorAll('[id^="percent-"]');
+        
+        // Hide all arrows first
+        relationshipArrows.forEach(arrow => {
+            arrow.classList.add('hidden');
+        });
+        
+        // Hide all result circles
+        resultCircles.forEach(circle => {
+            circle.classList.add('hidden');
+        });
+        
+        // Hide all percent texts
+        resultTexts.forEach(text => {
+            text.classList.add('hidden');
+        });
+        
+        // Show only relationships between visible dice
+        visibleDice.forEach(firstKey => {
+            visibleDice.forEach(secondKey => {
+                if (firstKey !== secondKey) {
+                    const arrow = document.getElementById(`arrow-${firstKey}-${secondKey}`);
+                    const circle = document.getElementById(`circle-${firstKey}-${secondKey}`);
+                    const text = document.getElementById(`percent-${firstKey}-${secondKey}`);
+                    
+                    if (arrow) arrow.classList.remove('hidden');
+                    if (circle) circle.classList.remove('hidden');
+                    if (text) text.classList.remove('hidden');
+                }
+            });
+        });
+    }
+    
+    // Show all dice and relationships
+    function showAllDiceAndResults() {
+        const allDiceKeys = Object.keys(currentDice);
+        
+        // Show all dice nodes
+        allDiceKeys.forEach(key => {
+            if (diceElements[key]) {
+                diceElements[key].classList.remove('hidden');
+            }
+        });
+        
+        // Show all relationships
+        const relationshipArrows = document.querySelectorAll('.relationship-arrow');
+        const resultCircles = document.querySelectorAll('.result-circle');
+        const resultTexts = document.querySelectorAll('[id^="percent-"]');
+        
+        relationshipArrows.forEach(arrow => {
+            arrow.classList.remove('hidden');
+        });
+        
+        resultCircles.forEach(circle => {
+            circle.classList.remove('hidden');
+        });
+        
+        resultTexts.forEach(text => {
+            text.classList.remove('hidden');
+        });
+        
+        // Show all result rows
+        const resultRows = document.querySelectorAll('.result-row');
+        resultRows.forEach(row => {
+            row.classList.remove('hidden');
+        });
+    }
+    
+    // Update results visibility based on selected dice
+    function updateResultsVisibility(visibleDice) {
+        const resultRows = document.querySelectorAll('.result-row');
+        
+        // Hide all result rows first
+        resultRows.forEach(row => {
+            row.classList.add('hidden');
+        });
+        
+        // Show only result rows that involve visible dice
+        visibleDice.forEach(firstKey => {
+            visibleDice.forEach(secondKey => {
+                if (firstKey !== secondKey) {
+                    const resultRow = document.getElementById(`result-${firstKey}-${secondKey}`);
+                    if (resultRow) {
+                        resultRow.classList.remove('hidden');
+                    }
+                }
+            });
+        });
+    }
+    
     // Reset all results
     function resetResults() {
         const diceKeys = Object.keys(currentDice);
@@ -735,6 +857,9 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedDice = [];
         highlightedDice = [];
         
+        // Show all dice and results
+        showAllDiceAndResults();
+        
         // Remove any existing notification
         const existingNotification = document.querySelector('.notification');
         if (existingNotification) {
@@ -774,8 +899,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let diceToRoll;
         if (highlightedDice.length > 0) {
             diceToRoll = highlightedDice;
+            
+            // Hide unselected dice during simulation
+            hideUnselectedDice(highlightedDice);
+            
+            // Update results visibility
+            updateResultsVisibility(highlightedDice);
         } else {
             diceToRoll = Object.keys(currentDice);
+            
+            // Show all dice and results
+            showAllDiceAndResults();
         }
         
         // If the number of highlighted dice equals the player count, show a special notification

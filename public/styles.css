@@ -361,11 +361,27 @@ h1 {
 
 /* Relationship arrows */
 .relationship-arrow {
-    transition: stroke 0.3s ease, stroke-width 0.3s ease;
+    transition: stroke 0.3s ease, stroke-width 0.3s ease, opacity 0.3s ease;
 }
 
 .result-circle {
-    transition: stroke 0.3s ease;
+    transition: stroke 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hidden elements */
+.hidden {
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+.die-node.hidden {
+    opacity: 0.15;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+.result-row.hidden {
+    display: none;
 }
 
 /* Notification */
