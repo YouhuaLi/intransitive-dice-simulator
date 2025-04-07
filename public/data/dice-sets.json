@@ -55,68 +55,193 @@
             "D-A": "Die D beats Die A about 2/3 of the time (67%)"
         }
     },
-    "grime": {
-        "name": "Grime Dice",
+    "oskar_new": {
+        "name": "Oskar Dice (New)",
         "players": 3,
-        "diceCount": 4,
+        "diceCount": 7,
         "dice": {
-            "A": [5, 5, 9, 1, 1, 1],
-            "B": [6, 6, 6, 2, 2, 2],
-            "C": [7, 7, 3, 3, 3, 3],
-            "D": [8, 4, 4, 4, 4, 4]
+            "A": [
+                2,
+                2,
+                14,
+                14,
+                17,
+                17
+            ],
+            "B": [
+                7,
+                7,
+                10,
+                10,
+                16,
+                16
+            ],
+            "C": [
+                5,
+                5,
+                13,
+                13,
+                15,
+                15
+            ],
+            "D": [
+                3,
+                3,
+                9,
+                9,
+                21,
+                21
+            ],
+            "E": [
+                1,
+                1,
+                12,
+                12,
+                20,
+                20
+            ],
+            "F": [
+                6,
+                6,
+                8,
+                8,
+                19,
+                19
+            ],
+            "G": [
+                4,
+                4,
+                11,
+                11,
+                18,
+                18
+            ]
         },
         "beatRelationship": {
-            "A": ["B", "C"],
-            "B": ["C", "D"],
-            "C": ["D", "A"],
-            "D": ["A", "B"]
+            "A": [
+                "B",
+                "C",
+                "E"
+            ],
+            "B": [
+                "C",
+                "D",
+                "F"
+            ],
+            "C": [
+                "D",
+                "E",
+                "G"
+            ],
+            "D": [
+                "A",
+                "E",
+                "F"
+            ],
+            "E": [
+                "B",
+                "F",
+                "G"
+            ],
+            "F": [
+                "A",
+                "C",
+                "G"
+            ],
+            "G": [
+                "A",
+                "B",
+                "D"
+            ]
         },
         "lostRelationship": {
-            "BC": ["A"],
-            "CD": ["B"],
-            "AD": ["C"],
-            "AB": ["D"]
+            "AB": [
+                "G"
+            ],
+            "AC": [
+                "F"
+            ],
+            "AD": [
+                "G"
+            ],
+            "AE": [
+                "D"
+            ],
+            "AF": [
+                "D"
+            ],
+            "AG": [
+                "F"
+            ],
+            "BC": [
+                "A"
+            ],
+            "BD": [
+                "G"
+            ],
+            "BE": [
+                "A"
+            ],
+            "BF": [
+                "E"
+            ],
+            "BG": [
+                "E"
+            ],
+            "CD": [
+                "B"
+            ],
+            "CE": [
+                "A"
+            ],
+            "CF": [
+                "B"
+            ],
+            "CG": [
+                "F"
+            ],
+            "DE": [
+                "C"
+            ],
+            "DF": [
+                "B"
+            ],
+            "DG": [
+                "C"
+            ],
+            "EF": [
+                "D"
+            ],
+            "EG": [
+                "C"
+            ],
+            "FG": [
+                "E"
+            ]
         },
-        "info": "<p>Created by mathematician James Grime, these dice demonstrate an interesting property.</p><p>Not only is there intransitivity (A beats B, B beats C, C beats D, D beats A), but there's a non-transitive sub-loop: A beats C, and B beats D.</p><p>The winning probability is about 2/3 (67%) for each comparison.</p>",
+        "info": "<p>A custom set of 7 dice with calculated relationships between each die.</p><p>This set demonstrates intransitivity - where relationships between dice form cycles rather than a linear hierarchy.</p>",
         "tooltips": {
-            "A-B": "Die A beats Die B about 2/3 of the time (67%)",
-            "B-C": "Die B beats Die C about 2/3 of the time (67%)",
-            "C-D": "Die C beats Die D about 2/3 of the time (67%)",
-            "D-A": "Die D beats Die A about 2/3 of the time (67%)"
-        }
-    },
-    "oskar": {
-        "name": "Oskar Dice",
-        "players": 3,
-        "diceCount": 5,
-        "dice": {
-            "A": [1, 2, 5, 6, 7, 9],
-            "B": [1, 3, 4, 5, 8, 9],
-            "C": [2, 3, 4, 7, 8, 9],
-            "D": [1, 2, 6, 7, 8, 9],
-            "E": [3, 4, 5, 6, 7, 8]
-        },
-        "beatRelationship": {
-            "A": ["B", "C"],
-            "B": ["C", "D"],
-            "C": ["D", "E"],
-            "D": ["E", "A"],
-            "E": ["A", "B"]
-        },
-        "lostRelationship": {
-            "BC": ["A"],
-            "CD": ["B"],
-            "DE": ["C"],
-            "AE": ["D"],
-            "AB": ["E"]
-        },
-        "info": "<p>A set of five intransitive dice with a complex relationship pattern.</p><p>The winning pattern creates a pentagram: A beats B and C, B beats C and D, C beats D and E, D beats E and A, E beats A and B.</p><p>This creates multiple non-transitive loops and demonstrates how intricate these relationships can be.</p>",
-        "tooltips": {
-            "A-B": "Die A beats Die B about 5/9 of the time (56%)",
-            "B-C": "Die B beats Die C about 5/9 of the time (56%)",
-            "C-D": "Die C beats Die D about 5/9 of the time (56%)",
-            "D-E": "Die D beats Die E about 5/9 of the time (56%)",
-            "E-A": "Die E beats Die A about 5/9 of the time (56%)"
+            "A-B": "Die A beats Die B about 55.6% of the time",
+            "A-C": "Die A beats Die C about 55.6% of the time",
+            "A-E": "Die A beats Die E about 55.6% of the time",
+            "B-C": "Die B beats Die C about 55.6% of the time",
+            "B-D": "Die B beats Die D about 55.6% of the time",
+            "B-F": "Die B beats Die F about 55.6% of the time",
+            "C-D": "Die C beats Die D about 55.6% of the time",
+            "C-E": "Die C beats Die E about 55.6% of the time",
+            "C-G": "Die C beats Die G about 55.6% of the time",
+            "D-A": "Die D beats Die A about 55.6% of the time",
+            "D-E": "Die D beats Die E about 55.6% of the time",
+            "D-F": "Die D beats Die F about 55.6% of the time",
+            "E-B": "Die E beats Die B about 55.6% of the time",
+            "E-F": "Die E beats Die F about 55.6% of the time",
+            "E-G": "Die E beats Die G about 55.6% of the time",
+            "F-A": "Die F beats Die A about 55.6% of the time",
+            "F-C": "Die F beats Die C about 55.6% of the time",
+            "F-G": "Die F beats Die G about 55.6% of the time",
+            "G-A": "Die G beats Die A about 55.6% of the time",
+            "G-B": "Die G beats Die B about 55.6% of the time",
+            "G-D": "Die G beats Die D about 55.6% of the time"
         }
     },
     "miwin": {

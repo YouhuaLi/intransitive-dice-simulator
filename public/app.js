@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const rollButton = document.getElementById('rollButton');
     const resetButton = document.getElementById('resetButton');
     const simulateButton = document.getElementById('simulateButton');
-    const diceSetsElements = document.querySelectorAll('.dice-set');
     const currentSetTitle = document.getElementById('current-set-title');
     const currentDiceInfo = document.getElementById('current-dice-info');
     
@@ -35,12 +34,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // Function to build sidebar dynamically from JSON data
+    function buildSidebar() {
+        const sidebarList = document.querySelector('.dice-sets');
+        sidebarList.innerHTML = ''; // Clear existing sidebar items
+        
+        // Create list items for each dice set
+        for (const [key, set] of Object.entries(diceSets)) {
+            const listItem = document.createElement('li');
+            listItem.className = 'dice-set';
+            listItem.setAttribute('data-set', key);
+            
+            if (key === currentSet) {
+                listItem.classList.add('active');
+            }
+            
+            // Create short description based on players and dice count
+            const playerText = set.players ? `${set.players} players` : '';
+            const diceText = set.diceCount ? `${set.diceCount} dice` : '';
+            const description = [playerText, diceText].filter(Boolean).join(', ');
+            
+            listItem.innerHTML = `
+                <h3>${set.name}</h3>
+                <p>${description}</p>
+            `;
+            
+            sidebarList.appendChild(listItem);
+        }
+    }
+    
     // Initialize the application
     function init() {
         // Set up current dice
         currentDice = diceSets[currentSet].dice;
         
+        // Build sidebar dynamically
+        buildSidebar();
+        
         // Set up event listeners for dice set selection
+        const diceSetsElements = document.querySelectorAll('.dice-set');
         diceSetsElements.forEach(element => {
             element.addEventListener('click', () => {
                 const setName = element.getAttribute('data-set');
@@ -218,6 +250,15 @@ document.addEventListener('DOMContentLoaded', () => {
             currentDice = diceSets[setName].dice;
             setupDiceSet(setName);
             resetResults();
+            
+            // Update active class in sidebar
+            document.querySelectorAll('.dice-set').forEach(el => {
+                if (el.getAttribute('data-set') === setName) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
             
             // Reset die details view
             document.querySelector('.die-select-prompt').style.display = 'block';
