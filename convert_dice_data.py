@@ -25,6 +25,11 @@ def calculate_relationships(dice_values, players=2):
         tuple: (beat_relationship, lost_relationship, tooltips)
     """
     import itertools
+    import decimal
+    import math
+    
+    # Use Decimal for precise calculations
+    decimal.getcontext().prec = 28
     
     beat_relationship = {}
     lost_relationship = {}
@@ -32,32 +37,73 @@ def calculate_relationships(dice_values, players=2):
     
     dice_names = sorted(dice_values.keys())
     
-    # Calculate all win percentages first
+    # Calculate all win percentages first with higher precision
     win_percentages = {}
+    all_win_diffs = []  # Track all win percentage differences to detect special cases
+    
     for name in dice_names:
         for other_name in dice_names:
             if name != other_name:
                 total_comparisons = len(dice_values[name]) * len(dice_values[other_name])
                 wins_count = sum([1 for i in dice_values[name] for j in dice_values[other_name] if i > j])
-                win_pct = round((wins_count / total_comparisons) * 100, 1)
-                win_percentages[(name, other_name)] = win_pct
-    
-    # Determine beat relationships
+                # Use Decimal for precise calculation
+                win_pct_precise = decimal.Decimal(wins_count) / decimal.Decimal(total_comparisons)
+                # Rounded version for display only
+                win_pct_display = round(float(win_pct_precise) * 100, 1)
+                win_percentages[(name, other_name)] = (win_pct_precise, win_pct_display)
+                
+    # Calculate typical win percentage difference
     for name in dice_names:
-        beat_relationship[name] = []
-        
         for other_name in dice_names:
             if name != other_name:
-                win_pct = win_percentages[(name, other_name)]
-                reverse_win_pct = win_percentages[(other_name, name)]
+                win_pct_precise, _ = win_percentages[(name, other_name)]
+                reverse_win_pct_precise, _ = win_percentages[(other_name, name)]
                 
-                # Create tooltip with winning percentage
-                # tooltips[f"{name}-{other_name}"] = f"Die {name} beats Die {other_name} about {win_pct}% of the time"
-                
-                # Add to beat relationship if this die wins more often than the other die
-                # (win_pct > reverse_win_pct checks relative advantage)
-                if win_pct > reverse_win_pct:
-                    beat_relationship[name].append(other_name)
+                # Track the absolute difference in win rates
+                diff = abs(win_pct_precise - reverse_win_pct_precise)
+                all_win_diffs.append(diff)
+    
+    # Print some statistics to understand the relationships
+    if all_win_diffs:
+        avg_diff = sum(all_win_diffs) / len(all_win_diffs)
+        max_diff = max(all_win_diffs)
+        print(f"Statistics: Average win difference: {float(avg_diff)*100:.6f}%, Max difference: {float(max_diff)*100:.6f}%")
+        
+        # Force non-balanced set - we'll look for even tiny advantages
+        is_balanced_set = False
+    
+    # If we have a balanced set, create some interesting relationships
+    if is_balanced_set:
+        # For a balanced set, we'll create a cycle: A > B > C > ... > A
+        for i, name in enumerate(dice_names):
+            next_idx = (i + 1) % len(dice_names)
+            next_name = dice_names[next_idx]
+            beat_relationship[name] = [next_name]
+            
+            # Update tooltip to indicate this is artificially created
+            tooltips[f"{name}-{next_name}"] = f"Die {name} is balanced with Die {next_name} (artificial relationship created)"
+    else:
+        # Normal case - determine beat relationships based on win percentages
+        for name in dice_names:
+            beat_relationship[name] = []
+            
+            for other_name in dice_names:
+                if name != other_name:
+                    win_pct_precise, win_pct_display = win_percentages[(name, other_name)]
+                    reverse_win_pct_precise, reverse_win_pct_display = win_percentages[(other_name, name)]
+                    
+                    # Create tooltip with winning percentage
+                    # tooltips[f"{name}-{other_name}"] = f"Die {name} beats Die {other_name} about {win_pct_display}% of the time"
+                    
+                    # Add to beat relationship if this die has ANY advantage at all
+                    # Use a VERY small epsilon - we want to capture even tiny advantages
+                    epsilon = decimal.Decimal('0.0000001')  # Tiny advantage needed for intransitive dice
+                    if win_pct_precise > reverse_win_pct_precise + epsilon:
+                        beat_relationship[name].append(other_name)
+                        # For close relationships, print a special debug message
+                        diff_pct = float(win_pct_precise - reverse_win_pct_precise) * 100
+                        if abs(diff_pct) < 0.1:  # If difference is less than 0.1%
+                            print(f"Detected relationship: {name} beats {other_name} by {diff_pct:.8f}%")
     
     # Calculate lost_relationship based on combinations of (players-1) dice
     if players > 1:
@@ -158,26 +204,44 @@ def analyze_relationships(dice, beat_relationship):
     # Check if we have a cyclic relationship (like A beats B, B beats C, C beats A)
     dice_names = sorted(dice.keys())
     
-    # Check for intransitivity
+    # Check if every die has both winning and losing relationships
+    has_wins = {name: len(beat_relationship[name]) > 0 for name in dice_names}
+    has_losses = {name: any(name in beat_relationship[other] for other in dice_names) for name in dice_names}
+    
+    # Count total relationships
+    total_relationships = sum(len(winners) for winners in beat_relationship.values())
+    
+    # Check for intransitivity (cycles of length 3+)
     has_cycle = False
     cycles = set()  # Use a set to avoid duplicates
     
+    # Find all cycles of length 3
     for name in dice_names:
-        # Look for cycles of length 3
         for second in beat_relationship[name]:
             for third in beat_relationship.get(second, []):
                 if name in beat_relationship.get(third, []):
                     has_cycle = True
-                    # Sort the cycle to normalize it and avoid duplicate cycles
-                    cycle_dice = sorted([name, second, third])
-                    cycles.add(f"{cycle_dice[0]} beats {cycle_dice[1]}, {cycle_dice[1]} beats {cycle_dice[2]}, {cycle_dice[2]} beats {cycle_dice[0]}")
+                    # Keep the cycle in detection order to show the actual cycle
+                    cycles.add(f"{name} beats {second}, {second} beats {third}, {third} beats {name}")
+    
+    # Count how many dice have both wins and losses
+    intransitive_dice_count = sum(1 for name in dice_names if has_wins[name] and has_losses[name])
     
     if has_cycle:
-        if cycles:
+        if len(cycles) > 5:  # If too many cycles, just report the count
+            return f"This set demonstrates intransitivity with {len(cycles)} different cycles detected."
+        elif cycles:
             cycle_description = "; ".join(cycles)
             return f"This set demonstrates intransitivity with the following cycle(s): {cycle_description}"
         else:
             return "This set demonstrates intransitivity."
+    elif intransitive_dice_count > 0:
+        # Even without a cycle, if dice have both wins and losses, it's partial intransitivity
+        if total_relationships > 0:
+            return f"This set shows partial intransitivity with {intransitive_dice_count} dice having both wins and losses."
+    
+    if total_relationships == 0:
+        return "This set has no definitive winning relationships detected."
     else:
         return "This set does not demonstrate intransitivity (no cycles found)."
 
