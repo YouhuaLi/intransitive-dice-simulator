@@ -1,0 +1,61 @@
+{
+    "classic": {
+        "name": "Classic Set",
+        "players": 2,
+        "diceCount": 3,
+        "dice": {
+            "A": [
+                2,
+                2,
+                4,
+                4,
+                9,
+                9
+            ],
+            "B": [
+                1,
+                1,
+                6,
+                6,
+                8,
+                8
+            ],
+            "C": [
+                3,
+                3,
+                5,
+                5,
+                7,
+                7
+            ]
+        },
+        "beatRelationship": {
+            "A": [
+                "B"
+            ],
+            "B": [
+                "C"
+            ],
+            "C": [
+                "A"
+            ]
+        },
+        "lostRelationship": {
+            "B": [
+                "A"
+            ],
+            "C": [
+                "B"
+            ],
+            "A": [
+                "C"
+            ]
+        },
+        "info": "<p>The classic set demonstrates the basic intransitive property with three simple dice.</p><p>Each die will win against the next with approximately 5/9 (56%) probability.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 5/9 of the time (56%)",
+            "B-C": "Die B beats Die C about 5/9 of the time (56%)",
+            "C-A": "Die C beats Die A about 5/9 of the time (56%)"
+        }
+    }
+}

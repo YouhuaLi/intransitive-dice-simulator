@@ -1,0 +1,191 @@
+{
+    "oskar": {
+        "name": "Oskar Dice",
+        "players": 3,
+        "diceCount": 7,
+        "dice": {
+            "A": [
+                2,
+                2,
+                14,
+                14,
+                17,
+                17
+            ],
+            "B": [
+                7,
+                7,
+                10,
+                10,
+                16,
+                16
+            ],
+            "C": [
+                5,
+                5,
+                13,
+                13,
+                15,
+                15
+            ],
+            "D": [
+                3,
+                3,
+                9,
+                9,
+                21,
+                21
+            ],
+            "E": [
+                1,
+                1,
+                12,
+                12,
+                20,
+                20
+            ],
+            "F": [
+                6,
+                6,
+                8,
+                8,
+                19,
+                19
+            ],
+            "G": [
+                4,
+                4,
+                11,
+                11,
+                18,
+                18
+            ]
+        },
+        "beatRelationship": {
+            "A": [
+                "B",
+                "C",
+                "E"
+            ],
+            "B": [
+                "C",
+                "D",
+                "F"
+            ],
+            "C": [
+                "D",
+                "E",
+                "G"
+            ],
+            "D": [
+                "A",
+                "E",
+                "F"
+            ],
+            "E": [
+                "B",
+                "F",
+                "G"
+            ],
+            "F": [
+                "A",
+                "C",
+                "G"
+            ],
+            "G": [
+                "A",
+                "B",
+                "D"
+            ]
+        },
+        "lostRelationship": {
+            "AB": [
+                "G"
+            ],
+            "AC": [
+                "F"
+            ],
+            "AD": [
+                "G"
+            ],
+            "AE": [
+                "D"
+            ],
+            "AF": [
+                "D"
+            ],
+            "AG": [
+                "F"
+            ],
+            "BC": [
+                "A"
+            ],
+            "BD": [
+                "G"
+            ],
+            "BE": [
+                "A"
+            ],
+            "BF": [
+                "E"
+            ],
+            "BG": [
+                "E"
+            ],
+            "CD": [
+                "B"
+            ],
+            "CE": [
+                "A"
+            ],
+            "CF": [
+                "B"
+            ],
+            "CG": [
+                "F"
+            ],
+            "DE": [
+                "C"
+            ],
+            "DF": [
+                "B"
+            ],
+            "DG": [
+                "C"
+            ],
+            "EF": [
+                "D"
+            ],
+            "EG": [
+                "C"
+            ],
+            "FG": [
+                "E"
+            ]
+        },
+        "info": "<p>A custom set of 7 dice with calculated relationships between each die.</p><p>This set demonstrates intransitivity - where relationships between dice form cycles rather than a linear hierarchy.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 55.6% of the time",
+            "A-C": "Die A beats Die C about 55.6% of the time",
+            "A-E": "Die A beats Die E about 55.6% of the time",
+            "B-C": "Die B beats Die C about 55.6% of the time",
+            "B-D": "Die B beats Die D about 55.6% of the time",
+            "B-F": "Die B beats Die F about 55.6% of the time",
+            "C-D": "Die C beats Die D about 55.6% of the time",
+            "C-E": "Die C beats Die E about 55.6% of the time",
+            "C-G": "Die C beats Die G about 55.6% of the time",
+            "D-A": "Die D beats Die A about 55.6% of the time",
+            "D-E": "Die D beats Die E about 55.6% of the time",
+            "D-F": "Die D beats Die F about 55.6% of the time",
+            "E-B": "Die E beats Die B about 55.6% of the time",
+            "E-F": "Die E beats Die F about 55.6% of the time",
+            "E-G": "Die E beats Die G about 55.6% of the time",
+            "F-A": "Die F beats Die A about 55.6% of the time",
+            "F-C": "Die F beats Die C about 55.6% of the time",
+            "F-G": "Die F beats Die G about 55.6% of the time",
+            "G-A": "Die G beats Die A about 55.6% of the time",
+            "G-B": "Die G beats Die B about 55.6% of the time",
+            "G-D": "Die G beats Die D about 55.6% of the time"
+        }
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "miwin": {
+        "name": "Miwin Dice",
+        "players": 2,
+        "diceCount": 3,
+        "dice": {
+            "A": [
+                1,
+                2,
+                5,
+                6,
+                7,
+                9
+            ],
+            "B": [
+                1,
+                3,
+                4,
+                5,
+                8,
+                9
+            ],
+            "C": [
+                2,
+                3,
+                4,
+                6,
+                7,
+                8
+            ]
+        },
+        "beatRelationship": {
+            "A": [
+                "B"
+            ],
+            "B": [
+                "C"
+            ],
+            "C": [
+                "A"
+            ]
+        },
+        "lostRelationship": {
+            "A": [
+                "C"
+            ],
+            "B": [
+                "A"
+            ],
+            "C": [
+                "B"
+            ]
+        },
+        "info": "<p>A custom set of 3 dice with calculated relationships between each die.</p><p>This set demonstrates intransitivity with the following cycle(s): A beats B, B beats C, C beats A</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 47.2% of the time",
+            "A-C": "Die A beats Die C about 44.4% of the time",
+            "B-A": "Die B beats Die A about 44.4% of the time",
+            "B-C": "Die B beats Die C about 47.2% of the time",
+            "C-A": "Die C beats Die A about 47.2% of the time",
+            "C-B": "Die C beats Die B about 44.4% of the time"
+        }
+    }
+}

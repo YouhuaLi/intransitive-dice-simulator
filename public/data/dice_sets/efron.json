@@ -1,0 +1,76 @@
+{
+    "efron": {
+        "name": "Efron's Dice",
+        "players": 2,
+        "diceCount": 4,
+        "dice": {
+            "A": [
+                4,
+                4,
+                4,
+                4,
+                0,
+                0
+            ],
+            "B": [
+                3,
+                3,
+                3,
+                3,
+                3,
+                3
+            ],
+            "C": [
+                6,
+                6,
+                2,
+                2,
+                2,
+                2
+            ],
+            "D": [
+                5,
+                5,
+                5,
+                1,
+                1,
+                1
+            ]
+        },
+        "beatRelationship": {
+            "A": [
+                "B"
+            ],
+            "B": [
+                "C"
+            ],
+            "C": [
+                "D"
+            ],
+            "D": [
+                "A"
+            ]
+        },
+        "lostRelationship": {
+            "B": [
+                "A"
+            ],
+            "C": [
+                "B"
+            ],
+            "D": [
+                "C"
+            ],
+            "A": [
+                "D"
+            ]
+        },
+        "info": "<p>Created by mathematician Bradley Efron, these four dice form a non-transitive set.</p><p>Die A beats B, Die B beats C, Die C beats D, but Die D beats A, creating a cycle.</p><p>Each die beats the next with a 2/3 (67%) probability.</p>",
+        "tooltips": {
+            "A-B": "Die A beats Die B about 2/3 of the time (67%)",
+            "B-C": "Die B beats Die C about 2/3 of the time (67%)",
+            "C-D": "Die C beats Die D about 2/3 of the time (67%)",
+            "D-A": "Die D beats Die A about 2/3 of the time (67%)"
+        }
+    }
+}
