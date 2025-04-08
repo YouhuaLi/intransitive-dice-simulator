@@ -384,6 +384,12 @@ h1 {
     display: none;
 }
 
+/* Hide percentage circles until simulation starts */
+.no-results {
+    opacity: 0;
+    visibility: hidden;
+}
+
 /* Notification */
 .notification {
     position: absolute;

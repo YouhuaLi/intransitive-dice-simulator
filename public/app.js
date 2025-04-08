@@ -196,6 +196,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (set.players && selectedDiceKeys.length === set.players - 1) {
             // First try using lostRelationship if available
             if (set.lostRelationship) {
+                // Sort the selected dice keys alphabetically and combine them into a single key
+                // For example, if user selected dice B, A, D, form the key "ABD"
+                const combinedKey = [...selectedDiceKeys].sort().join('');
+                
+                // Check if there's a direct entry for this combination of dice
+                if (set.lostRelationship[combinedKey] && set.lostRelationship[combinedKey].length > 0) {
+                    // If there are multiple winning dice, select a random one
+                    const winningDice = set.lostRelationship[combinedKey];
+                    return winningDice[Math.floor(Math.random() * winningDice.length)];
+                }
+                
+                // If no direct combined entry exists, fallback to individual checks
                 // Find a die that all selected dice lose to
                 for (const dieKey of remainingDice) {
                     let isWinningDie = true;
@@ -213,6 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         return dieKey;
                     }
                 }
+                
+                // Log error if no winning die was found in the lostRelationship
+                console.error(`No winning die found for combination ${combinedKey} in lostRelationship`);
             }
             
             // Fallback to using beat relationship if lostRelationship didn't work
@@ -249,6 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // If no single die can beat all selected dice, return a random one
+        // with a warning in the console
+        console.warn("No winning die found, selecting randomly", selectedDiceKeys);
         return remainingDice[Math.floor(Math.random() * remainingDice.length)];
     }
     
@@ -363,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const beatenDice = set.beatRelationship[firstKey];
                 
                 beatenDice.forEach(nextKey => {
-                    drawArrow(svg, nodes[firstKey], nodes[nextKey], firstKey, nextKey);
+                    drawArrow(svg, nodes[firstKey], nodes[nextKey], firstKey, nextKey, true);
                 });
             }
         } else {
@@ -372,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const firstKey = diceKeys[i];
                 const nextKey = diceKeys[(i + 1) % diceKeys.length];
                 
-                drawArrow(svg, nodes[firstKey], nodes[nextKey], firstKey, nextKey);
+                drawArrow(svg, nodes[firstKey], nodes[nextKey], firstKey, nextKey, true);
             }
         }
         
@@ -438,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Draw an arrow between two nodes
-    function drawArrow(svg, startNode, endNode, startKey, endKey) {
+    function drawArrow(svg, startNode, endNode, startKey, endKey, initialRender = false) {
         const arrowId = `arrow-${startKey}-${endKey}`;
         
         // Calculate arrow position
@@ -483,6 +500,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resultCircle.setAttribute('stroke-width', '1');
         resultCircle.setAttribute('class', 'result-circle');
         
+        // Hide result circles until simulation has run
+        if (initialRender) {
+            resultCircle.classList.add('no-results');
+        }
+        
         const resultText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         resultText.setAttribute('id', `percent-${startKey}-${endKey}`);
         resultText.setAttribute('x', startOffsetX + (endOffsetX - startOffsetX) / 2);
@@ -490,7 +512,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resultText.setAttribute('text-anchor', 'middle');
         resultText.setAttribute('font-size', '10');
         resultText.setAttribute('font-weight', 'bold');
-        resultText.textContent = '0%';
+        
+        // Hide percentage text until simulation has run
+        if (initialRender) {
+            resultText.classList.add('no-results');
+            resultText.textContent = '';
+        } else {
+            resultText.textContent = '0%';
+        }
         
         // Add arrowhead marker if it doesn't exist yet
         let marker = svg.querySelector('#arrowhead');
@@ -592,6 +621,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (roll2 > roll1) {
                         results[`${nextKey}vs${firstKey}Wins`]++;
                     }
+                    
+                    // Show result circles if they were hidden
+                    const circle = document.getElementById(`circle-${firstKey}-${nextKey}`);
+                    const text = document.getElementById(`percent-${firstKey}-${nextKey}`);
+                    
+                    if (circle && circle.classList.contains('no-results')) {
+                        circle.classList.remove('no-results');
+                    }
+                    
+                    if (text && text.classList.contains('no-results')) {
+                        text.classList.remove('no-results');
+                    }
                 });
             }
         } else {
@@ -607,6 +648,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     results[`${firstKey}vs${nextKey}Wins`]++;
                 } else if (roll2 > roll1) {
                     results[`${nextKey}vs${firstKey}Wins`]++;
+                }
+                
+                // Show result circles if they were hidden
+                const circle = document.getElementById(`circle-${firstKey}-${nextKey}`);
+                const text = document.getElementById(`percent-${firstKey}-${nextKey}`);
+                
+                if (circle && circle.classList.contains('no-results')) {
+                    circle.classList.remove('no-results');
+                }
+                
+                if (text && text.classList.contains('no-results')) {
+                    text.classList.remove('no-results');
                 }
             }
         }
@@ -735,20 +788,48 @@ document.addEventListener('DOMContentLoaded', () => {
             text.classList.add('hidden');
         });
         
-        // Show only relationships between visible dice
-        visibleDice.forEach(firstKey => {
-            visibleDice.forEach(secondKey => {
-                if (firstKey !== secondKey) {
-                    const arrow = document.getElementById(`arrow-${firstKey}-${secondKey}`);
-                    const circle = document.getElementById(`circle-${firstKey}-${secondKey}`);
-                    const text = document.getElementById(`percent-${firstKey}-${secondKey}`);
-                    
-                    if (arrow) arrow.classList.remove('hidden');
-                    if (circle) circle.classList.remove('hidden');
-                    if (text) text.classList.remove('hidden');
-                }
+        // If we have a simulation setup (highlighted dice including a winning die)
+        if (highlightedDice.length > 0) {
+            // Determine the winning die (the last one added to highlightedDice)
+            const winningDie = highlightedDice[highlightedDice.length - 1];
+            const losingDice = highlightedDice.slice(0, -1);
+            
+            // Show only relationships between the winning die and each losing die
+            losingDice.forEach(losingKey => {
+                // Show the winning die vs losing die relationship
+                const arrow = document.getElementById(`arrow-${winningDie}-${losingKey}`);
+                const circle = document.getElementById(`circle-${winningDie}-${losingKey}`);
+                const text = document.getElementById(`percent-${winningDie}-${losingKey}`);
+                
+                if (arrow) arrow.classList.remove('hidden');
+                if (circle) circle.classList.remove('hidden');
+                if (text) text.classList.remove('hidden');
+                
+                // Also show the reverse relationship (if it exists)
+                const reverseArrow = document.getElementById(`arrow-${losingKey}-${winningDie}`);
+                const reverseCircle = document.getElementById(`circle-${losingKey}-${winningDie}`);
+                const reverseText = document.getElementById(`percent-${losingKey}-${winningDie}`);
+                
+                if (reverseArrow) reverseArrow.classList.remove('hidden');
+                if (reverseCircle) reverseCircle.classList.remove('hidden');
+                if (reverseText) reverseText.classList.remove('hidden');
             });
-        });
+        } else {
+            // Regular mode - show all relationships between visible dice
+            visibleDice.forEach(firstKey => {
+                visibleDice.forEach(secondKey => {
+                    if (firstKey !== secondKey) {
+                        const arrow = document.getElementById(`arrow-${firstKey}-${secondKey}`);
+                        const circle = document.getElementById(`circle-${firstKey}-${secondKey}`);
+                        const text = document.getElementById(`percent-${firstKey}-${secondKey}`);
+                        
+                        if (arrow) arrow.classList.remove('hidden');
+                        if (circle) circle.classList.remove('hidden');
+                        if (text) text.classList.remove('hidden');
+                    }
+                });
+            });
+        }
     }
     
     // Show all dice and relationships
@@ -795,17 +876,39 @@ document.addEventListener('DOMContentLoaded', () => {
             row.classList.add('hidden');
         });
         
-        // Show only result rows that involve visible dice
-        visibleDice.forEach(firstKey => {
-            visibleDice.forEach(secondKey => {
-                if (firstKey !== secondKey) {
-                    const resultRow = document.getElementById(`result-${firstKey}-${secondKey}`);
-                    if (resultRow) {
-                        resultRow.classList.remove('hidden');
-                    }
+        // If we have highlighted dice (which includes the winning die)
+        if (highlightedDice.length > 0) {
+            // Determine the winning die (the last one added to highlightedDice)
+            const winningDie = highlightedDice[highlightedDice.length - 1];
+            const losingDice = highlightedDice.slice(0, -1);
+            
+            // Show only result rows between the winning die and each losing die
+            losingDice.forEach(losingKey => {
+                // Show the winning die vs losing die result row
+                const resultRow = document.getElementById(`result-${winningDie}-${losingKey}`);
+                if (resultRow) {
+                    resultRow.classList.remove('hidden');
+                }
+                
+                // Also check for the reverse order
+                const reverseResultRow = document.getElementById(`result-${losingKey}-${winningDie}`);
+                if (reverseResultRow) {
+                    reverseResultRow.classList.remove('hidden');
                 }
             });
-        });
+        } else {
+            // If no highlighted dice (regular mode), show all combinations
+            visibleDice.forEach(firstKey => {
+                visibleDice.forEach(secondKey => {
+                    if (firstKey !== secondKey) {
+                        const resultRow = document.getElementById(`result-${firstKey}-${secondKey}`);
+                        if (resultRow) {
+                            resultRow.classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+        }
     }
     
     // Reset all results
@@ -824,6 +927,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 beatenDice.forEach(nextKey => {
                     results[`${firstKey}vs${nextKey}Wins`] = 0;
                     results[`${nextKey}vs${firstKey}Wins`] = 0;
+                    
+                    // Hide result circles
+                    const circle = document.getElementById(`circle-${firstKey}-${nextKey}`);
+                    const text = document.getElementById(`percent-${firstKey}-${nextKey}`);
+                    
+                    if (circle) {
+                        circle.classList.add('no-results');
+                    }
+                    
+                    if (text) {
+                        text.classList.add('no-results');
+                        text.textContent = '';
+                    }
                 });
             }
         } else {
@@ -833,6 +949,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nextKey = diceKeys[(i + 1) % diceKeys.length];
                 results[`${firstKey}vs${nextKey}Wins`] = 0;
                 results[`${nextKey}vs${firstKey}Wins`] = 0;
+                
+                // Hide result circles
+                const circle = document.getElementById(`circle-${firstKey}-${nextKey}`);
+                const text = document.getElementById(`percent-${firstKey}-${nextKey}`);
+                
+                if (circle) {
+                    circle.classList.add('no-results');
+                }
+                
+                if (text) {
+                    text.classList.add('no-results');
+                    text.textContent = '';
+                }
             }
         }
         

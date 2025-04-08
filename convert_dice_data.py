@@ -7,17 +7,6 @@ import os
 import numpy as np
 from collections import defaultdict
 
-def bias(d1, d2):
-    """
-    Calculate the bias between two dice by comparing face values.
-    Positive means d1 beats d2, negative means d2 beats d1.
-    """
-    return sum([(j < i) - (i < j) for i in d1 for j in d2])
-
-def wins(d1, d2):
-    """Determine if d1 beats d2 based on bias sign"""
-    return np.sign(bias(d1, d2))
-
 def calculate_win_percentage(d1, d2):
     """Calculate the percentage of time d1 beats d2"""
     total_comparisons = len(d1) * len(d2)
@@ -26,7 +15,7 @@ def calculate_win_percentage(d1, d2):
 
 def calculate_relationships(dice_values, players=2):
     """
-    Calculate beat relationships between dice based on bias calculations
+    Calculate beat relationships between dice based on relative win percentages
     
     Args:
         dice_values (dict): Dictionary mapping die names to their face values
@@ -43,24 +32,38 @@ def calculate_relationships(dice_values, players=2):
     
     dice_names = sorted(dice_values.keys())
     
-    # For each die, determine which other dice it beats
+    # Calculate all win percentages first
+    win_percentages = {}
+    for name in dice_names:
+        for other_name in dice_names:
+            if name != other_name:
+                total_comparisons = len(dice_values[name]) * len(dice_values[other_name])
+                wins_count = sum([1 for i in dice_values[name] for j in dice_values[other_name] if i > j])
+                win_pct = round((wins_count / total_comparisons) * 100, 1)
+                win_percentages[(name, other_name)] = win_pct
+    
+    # Determine beat relationships
     for name in dice_names:
         beat_relationship[name] = []
         
         for other_name in dice_names:
             if name != other_name:
-                if wins(dice_values[name], dice_values[other_name]) > 0:
+                win_pct = win_percentages[(name, other_name)]
+                reverse_win_pct = win_percentages[(other_name, name)]
+                
+                # Create tooltip with winning percentage
+                # tooltips[f"{name}-{other_name}"] = f"Die {name} beats Die {other_name} about {win_pct}% of the time"
+                
+                # Add to beat relationship if this die wins more often than the other die
+                # (win_pct > reverse_win_pct checks relative advantage)
+                if win_pct > reverse_win_pct:
                     beat_relationship[name].append(other_name)
-                    
-                    # Create tooltip with winning percentage
-                    win_pct = calculate_win_percentage(dice_values[name], dice_values[other_name])
-                    tooltips[f"{name}-{other_name}"] = f"Die {name} beats Die {other_name} about {win_pct}% of the time"
     
     # Calculate lost_relationship based on combinations of (players-1) dice
     if players > 1:
         # For each combination of (players-1) dice...
         for dice_combo in itertools.combinations(dice_names, players-1):
-            combo_key = ''.join(dice_combo)  # Create a key from the combination (e.g., "ABC")
+            combo_key = ''.join(dice_combo)  # Create a key from the combination (e.g., "AB")
             lost_relationship[combo_key] = []
             
             # Find all dice that beat ALL dice in this combination
@@ -134,9 +137,9 @@ def convert_dice_to_json(input_file, set_name="custom_dice", players=2):
     }
     
     # Analyze the relationships
-    relationship_info = analyze_relationships(dice, beat_relationship)
-    if relationship_info:
-        dice_data["info"] += f"<p>{relationship_info}</p>"
+    # relationship_info = analyze_relationships(dice, beat_relationship)
+    # if relationship_info:
+    #     dice_data["info"] += f"<p>{relationship_info}</p>"
     
     # Create the JSON output
     json_output = {
@@ -157,19 +160,26 @@ def analyze_relationships(dice, beat_relationship):
     
     # Check for intransitivity
     has_cycle = False
-    for i, name in enumerate(dice_names):
-        for j, next_name in enumerate(dice_names):
-            if next_name in beat_relationship[name]:
-                for k, third_name in enumerate(dice_names):
-                    if third_name != name and third_name != next_name:
-                        if third_name in beat_relationship[next_name] and name in beat_relationship[third_name]:
-                            has_cycle = True
-                            break
+    cycles = set()  # Use a set to avoid duplicates
+    
+    for name in dice_names:
+        # Look for cycles of length 3
+        for second in beat_relationship[name]:
+            for third in beat_relationship.get(second, []):
+                if name in beat_relationship.get(third, []):
+                    has_cycle = True
+                    # Sort the cycle to normalize it and avoid duplicate cycles
+                    cycle_dice = sorted([name, second, third])
+                    cycles.add(f"{cycle_dice[0]} beats {cycle_dice[1]}, {cycle_dice[1]} beats {cycle_dice[2]}, {cycle_dice[2]} beats {cycle_dice[0]}")
     
     if has_cycle:
-        return "This set demonstrates intransitivity - where relationships between dice form cycles rather than a linear hierarchy."
+        if cycles:
+            cycle_description = "; ".join(cycles)
+            return f"This set demonstrates intransitivity with the following cycle(s): {cycle_description}"
+        else:
+            return "This set demonstrates intransitivity."
     else:
-        return "The relationships between these dice form a hierarchy rather than intransitive cycles."
+        return "This set does not demonstrate intransitivity (no cycles found)."
 
 def print_usage():
     print("Usage: python3 convert_dice_data.py <input_file> [set_name] [players]")
