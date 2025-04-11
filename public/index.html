@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="page-container">
-        <div class="sidebar">
+        <div class="sidebar left-sidebar">
             <h2>Select Dice Set</h2>
             <ul class="dice-sets">
                 <!-- Dice sets will be loaded dynamically from JSON -->
@@ -18,27 +18,6 @@
                 <div id="current-dice-info">
                     <p>The classic set demonstrates the basic intransitive property with three simple dice.</p>
                     <p>Each die will win against the next with approximately 5/9 (56%) probability.</p>
-                </div>
-            </div>
-            
-            <div class="die-details">
-                <h3>Die Details</h3>
-                <div id="selected-die-details">
-                    <p class="die-select-prompt">Click on a die to see its details</p>
-                    <div id="die-details-content" style="display: none;">
-                        <h4 id="selected-die-name">Die A</h4>
-                        <div class="selected-die-current">
-                            <p>Current Value: <span id="selected-die-value">?</span></p>
-                        </div>
-                        <div class="selected-die-faces">
-                            <p>Face Values:</p>
-                            <ul id="selected-die-faces-list"></ul>
-                        </div>
-                        <div class="selected-die-stats">
-                            <p>Statistics:</p>
-                            <div id="selected-die-stats-content"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -95,6 +74,29 @@
                         <div class="result-row">
                             <div>C vs A: <span id="CvsAWins">0</span> - <span id="AvsCWins">0</span></div>
                             <div class="win-percentage">(<span id="CvsA">0</span>%)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar right-sidebar">
+            <div class="die-details">
+                <h3>Die Details</h3>
+                <div id="selected-die-details">
+                    <p class="die-select-prompt">Click on a die to see its details</p>
+                    <div id="die-details-content" style="display: none;">
+                        <h4 id="selected-die-name">Die A</h4>
+                        <div class="selected-die-current">
+                            <p>Current Value: <span id="selected-die-value">?</span></p>
+                        </div>
+                        <div class="selected-die-faces">
+                            <p>Face Values:</p>
+                            <ul id="selected-die-faces-list"></ul>
+                        </div>
+                        <div class="selected-die-stats">
+                            <p>Statistics:</p>
+                            <div id="selected-die-stats-content"></div>
                         </div>
                     </div>
                 </div>

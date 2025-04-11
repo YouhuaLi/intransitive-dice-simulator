@@ -15,15 +15,24 @@ body {
 .page-container {
     display: flex;
     min-height: 100vh;
+    width: 100%;
 }
 
 /* Sidebar Styles */
 .sidebar {
-    width: 300px;
+    width: 250px;
     background-color: #2c3e50;
     color: white;
     padding: 20px;
     overflow-y: auto;
+}
+
+.left-sidebar {
+    order: 1;
+}
+
+.right-sidebar {
+    order: 3;
 }
 
 .sidebar h2 {
@@ -200,6 +209,7 @@ body {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
+    order: 2;
 }
 
 .container {
@@ -558,6 +568,19 @@ button:hover {
     .sidebar {
         width: 100%;
         max-height: 300px;
+        order: initial !important;
+    }
+    
+    .left-sidebar {
+        order: 1 !important;
+    }
+    
+    .right-sidebar {
+        order: 3 !important;
+    }
+    
+    .main-content {
+        order: 2 !important;
     }
     
     .dice-sets {
