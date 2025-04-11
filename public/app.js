@@ -422,8 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const diceKeys = Object.keys(set.dice);
         diceElements = {};
         
-        // Check if this is Georgescu's or Youhua's dice set for special table layout
-        const useTableLayout = set.diceCount >= 10;
+        // Check if we need to use table layout (for sets with large numbers of dice)
+        const useTableLayout = set.diceCount >= 50;
         
         let container;
         if (useTableLayout) {
@@ -437,6 +437,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const diceGrid = document.createElement('div');
             diceGrid.className = 'dice-grid';
             container.appendChild(diceGrid);
+            
+            // Add a class to the container for better styling of large dice sets
+            if (diceKeys.length > 20) {
+                container.classList.add('large-dice-set');
+            }
             
             // Add dice to the grid
             diceKeys.forEach((key) => {
@@ -478,9 +483,27 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Create dice nodes in a circle
             const nodeSize = 60;
-            const centerX = 250;
-            const centerY = 200;
-            const radius = 150;
+            
+            // For larger sets, increase the container size
+            let containerWidth = 500;
+            let containerHeight = 500;
+            
+            if (diceKeys.length > 6) {
+                containerWidth = Math.min(800, diceKeys.length * 70);
+                containerHeight = Math.min(800, diceKeys.length * 70);
+                
+                // Update container style
+                container.style.width = `${containerWidth}px`;
+                container.style.height = `${containerHeight}px`;
+            }
+            
+            const centerX = containerWidth / 2;
+            const centerY = containerHeight / 2;
+            
+            // Calculate appropriate radius based on dice count to prevent overlap
+            // Minimum spacing between nodes should be at least the node size
+            const minCircumference = diceKeys.length * nodeSize * 1.5; // 1.5x node size for spacing
+            const radius = Math.max(150, minCircumference / (2 * Math.PI));
             
             // Calculate node positions in a circle
             const nodes = {};
