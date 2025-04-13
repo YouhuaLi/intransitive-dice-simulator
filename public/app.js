@@ -220,9 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show all dice initially and reset arrow visibility
         showAllDiceAndResults();
         
-        // Check if we're using table layout (Georgescu's or Youhua's dice)
-        const isTableLayout = currentSet === 'georgescus_dice' || currentSet === 'youhuas_dice';
-        
         // Check if we have a large dice set 
         const hasLargeDiceSet = Object.keys(currentDice).length >= 10;
         
@@ -241,63 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         diceElements[key].classList.add('highlighted');
                     }
                 });
-                
-                // For table layout, draw arrows now
-                if (isTableLayout) {
-                    const container = document.querySelector('.dice-table-container');
-                    const svg = container.querySelector('.relationship-svg');
-                    
-                    // Show the SVG container
-                    svg.style.display = 'block';
-                    
-                    // Clear any existing arrows
-                    svg.innerHTML = '';
-                    
-                    // Add arrowhead marker definition
-                    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-                    marker.setAttribute('id', 'arrowhead');
-                    marker.setAttribute('markerWidth', '10');
-                    marker.setAttribute('markerHeight', '7');
-                    marker.setAttribute('refX', '9');
-                    marker.setAttribute('refY', '3.5');
-                    marker.setAttribute('orient', 'auto');
-                    
-                    const markerPath = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                    markerPath.setAttribute('points', '0 0, 10 3.5, 0 7');
-                    markerPath.setAttribute('fill', '#555');
-                    
-                    marker.appendChild(markerPath);
-                    svg.appendChild(marker);
-                    
-                    // Calculate positions of selected dice and winning die
-                    const positions = {};
-                    
-                    highlightedDice.forEach(key => {
-                        const element = diceElements[key];
-                        const rect = element.getBoundingClientRect();
-                        const containerRect = container.getBoundingClientRect();
-                        
-                        // Calculate position relative to the container
-                        positions[key] = {
-                            x: rect.left - containerRect.left + rect.width/2,
-                            y: rect.top - containerRect.top + rect.height/2,
-                            key: key
-                        };
-                    });
-                    
-                    // Draw arrows from winning die to each selected die
-                    const losingDice = selectedDice;
-                    
-                    losingDice.forEach(losingKey => {
-                        if (set.beatRelationship && set.beatRelationship[winningDie] && 
-                            set.beatRelationship[winningDie].includes(losingKey)) {
-                            // Draw arrow from winning die to losing die
-                            if (positions[winningDie] && positions[losingKey]) {
-                                drawArrow(svg, positions[winningDie], positions[losingKey], winningDie, losingKey, false);
-                            }
-                        }
-                    });
-                }
+
                 
                 // Hide unselected dice in the graph
                 hideUnselectedDice(highlightedDice);
@@ -330,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Automatically roll these dice once
                 setTimeout(() => rollAllDice(), 800);
             }
-        } else if (isTableLayout) {
+        } else if (false) {
             // Not enough dice selected for table layout, hide arrows
             const container = document.querySelector('.dice-table-container');
             if (container) {
@@ -1107,7 +1048,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide unselected dice in the graph
     function hideUnselectedDice(visibleDice) {
         const allDiceKeys = Object.keys(currentDice);
-        const isTableLayout = currentSet === 'georgescus_dice' || currentSet === 'youhuas_dice';
         
         // Hide unselected dice nodes
         allDiceKeys.forEach(key => {
@@ -1116,139 +1056,75 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // For table layout, handle differently
-        if (isTableLayout) {
-            // Only need to show SVG if we have highlighted dice
-            if (highlightedDice.length > 0) {
-                const container = document.querySelector('.dice-table-container');
-                if (container) {
-                    const svg = container.querySelector('.relationship-svg');
-                    if (svg) {
-                        svg.style.display = 'block';
-                        
-                        // Reset SVG content
-                        svg.innerHTML = '';
-                        
-                        // Add arrowhead marker definition
-                        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-                        marker.setAttribute('id', 'arrowhead');
-                        marker.setAttribute('markerWidth', '10');
-                        marker.setAttribute('markerHeight', '7');
-                        marker.setAttribute('refX', '9');
-                        marker.setAttribute('refY', '3.5');
-                        marker.setAttribute('orient', 'auto');
-                        
-                        const markerPath = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                        markerPath.setAttribute('points', '0 0, 10 3.5, 0 7');
-                        markerPath.setAttribute('fill', '#555');
-                        
-                        marker.appendChild(markerPath);
-                        svg.appendChild(marker);
-                        
-                        // Determine the winning die (the last one added to highlightedDice)
-                        const winningDie = highlightedDice[highlightedDice.length - 1];
-                        const losingDice = highlightedDice.slice(0, -1);
-                        
-                        // Calculate positions
-                        const positions = {};
-                        highlightedDice.forEach(key => {
-                            const element = diceElements[key];
-                            const rect = element.getBoundingClientRect();
-                            const containerRect = container.getBoundingClientRect();
-                            
-                            // Calculate position relative to the container
-                            positions[key] = {
-                                x: rect.left - containerRect.left + rect.width/2,
-                                y: rect.top - containerRect.top + rect.height/2,
-                                key: key
-                            };
-                        });
-                        
-                        // Draw arrows from winning die to each losing die
-                        losingDice.forEach(losingKey => {
-                            if (diceSets[currentSet].beatRelationship && 
-                                diceSets[currentSet].beatRelationship[winningDie] && 
-                                diceSets[currentSet].beatRelationship[winningDie].includes(losingKey)) {
-                                
-                                // Draw arrow from winning die to losing die
-                                if (positions[winningDie] && positions[losingKey]) {
-                                    drawArrow(svg, positions[winningDie], positions[losingKey], winningDie, losingKey, false);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        } else {
-            // Standard circular layout - hide relationships between unselected dice
-            const relationshipArrows = document.querySelectorAll('.relationship-arrow');
-            const resultCircles = document.querySelectorAll('.result-circle');
-            const resultTexts = document.querySelectorAll('[id^="percent-"]');
+
+        // Standard circular layout - hide relationships between unselected dice
+        const relationshipArrows = document.querySelectorAll('.relationship-arrow');
+        const resultCircles = document.querySelectorAll('.result-circle');
+        const resultTexts = document.querySelectorAll('[id^="percent-"]');
+        
+        // Hide all arrows first
+        relationshipArrows.forEach(arrow => {
+            arrow.classList.add('hidden');
+        });
+        
+        // Hide all result circles
+        resultCircles.forEach(circle => {
+            circle.classList.add('hidden');
+        });
+        
+        // Hide all percent texts
+        resultTexts.forEach(text => {
+            text.classList.add('hidden');
+        });
+        
+        // If we have a simulation setup (highlighted dice including a winning die)
+        if (highlightedDice.length > 0) {
+            // Determine the winning die (the last one added to highlightedDice)
+            const winningDie = highlightedDice[highlightedDice.length - 1];
+            const losingDice = highlightedDice.slice(0, -1);
             
-            // Hide all arrows first
-            relationshipArrows.forEach(arrow => {
-                arrow.classList.add('hidden');
-            });
-            
-            // Hide all result circles
-            resultCircles.forEach(circle => {
-                circle.classList.add('hidden');
-            });
-            
-            // Hide all percent texts
-            resultTexts.forEach(text => {
-                text.classList.add('hidden');
-            });
-            
-            // If we have a simulation setup (highlighted dice including a winning die)
-            if (highlightedDice.length > 0) {
-                // Determine the winning die (the last one added to highlightedDice)
-                const winningDie = highlightedDice[highlightedDice.length - 1];
-                const losingDice = highlightedDice.slice(0, -1);
+            // Show only relationships between the winning die and each losing die
+            losingDice.forEach(losingKey => {
+                // Show the winning die vs losing die relationship
+                const arrow = document.getElementById(`arrow-${winningDie}-${losingKey}`);
+                const circle = document.getElementById(`circle-${winningDie}-${losingKey}`);
+                const text = document.getElementById(`percent-${winningDie}-${losingKey}`);
                 
-                // Show only relationships between the winning die and each losing die
-                losingDice.forEach(losingKey => {
-                    // Show the winning die vs losing die relationship
-                    const arrow = document.getElementById(`arrow-${winningDie}-${losingKey}`);
-                    const circle = document.getElementById(`circle-${winningDie}-${losingKey}`);
-                    const text = document.getElementById(`percent-${winningDie}-${losingKey}`);
-                    
-                    if (arrow) arrow.classList.remove('hidden');
-                    if (circle) circle.classList.remove('hidden');
-                    if (text) text.classList.remove('hidden');
-                    
-                    // Also show the reverse relationship (if it exists)
-                    const reverseArrow = document.getElementById(`arrow-${losingKey}-${winningDie}`);
-                    const reverseCircle = document.getElementById(`circle-${losingKey}-${winningDie}`);
-                    const reverseText = document.getElementById(`percent-${losingKey}-${winningDie}`);
-                    
-                    if (reverseArrow) reverseArrow.classList.remove('hidden');
-                    if (reverseCircle) reverseCircle.classList.remove('hidden');
-                    if (reverseText) reverseText.classList.remove('hidden');
+                if (arrow) arrow.classList.remove('hidden');
+                if (circle) circle.classList.remove('hidden');
+                if (text) text.classList.remove('hidden');
+                
+                // Also show the reverse relationship (if it exists)
+                const reverseArrow = document.getElementById(`arrow-${losingKey}-${winningDie}`);
+                const reverseCircle = document.getElementById(`circle-${losingKey}-${winningDie}`);
+                const reverseText = document.getElementById(`percent-${losingKey}-${winningDie}`);
+                
+                if (reverseArrow) reverseArrow.classList.remove('hidden');
+                if (reverseCircle) reverseCircle.classList.remove('hidden');
+                if (reverseText) reverseText.classList.remove('hidden');
+            });
+        } else {
+            // Regular mode - show all relationships between visible dice
+            visibleDice.forEach(firstKey => {
+                visibleDice.forEach(secondKey => {
+                    if (firstKey !== secondKey) {
+                        const arrow = document.getElementById(`arrow-${firstKey}-${secondKey}`);
+                        const circle = document.getElementById(`circle-${firstKey}-${secondKey}`);
+                        const text = document.getElementById(`percent-${firstKey}-${secondKey}`);
+                        
+                        if (arrow) arrow.classList.remove('hidden');
+                        if (circle) circle.classList.remove('hidden');
+                        if (text) text.classList.remove('hidden');
+                    }
                 });
-            } else {
-                // Regular mode - show all relationships between visible dice
-                visibleDice.forEach(firstKey => {
-                    visibleDice.forEach(secondKey => {
-                        if (firstKey !== secondKey) {
-                            const arrow = document.getElementById(`arrow-${firstKey}-${secondKey}`);
-                            const circle = document.getElementById(`circle-${firstKey}-${secondKey}`);
-                            const text = document.getElementById(`percent-${firstKey}-${secondKey}`);
-                            
-                            if (arrow) arrow.classList.remove('hidden');
-                            if (circle) circle.classList.remove('hidden');
-                            if (text) text.classList.remove('hidden');
-                        }
-                    });
-                });
-            }
+            });
         }
+
     }
     
     // Show all dice and relationships
     function showAllDiceAndResults() {
         const allDiceKeys = Object.keys(currentDice);
-        const isTableLayout = currentSet === 'georgescus_dice' || currentSet === 'youhuas_dice';
         const hasLargeDiceSet = allDiceKeys.length >= 10;
         
         // Show all dice nodes
@@ -1258,49 +1134,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        if (isTableLayout) {
-            // For table layout, hide the SVG with arrows
-            const container = document.querySelector('.dice-table-container');
-            if (container) {
-                const svg = container.querySelector('.relationship-svg');
-                if (svg) {
-                    svg.style.display = 'none';
-                }
-            }
-        } else {
-            // For standard layout, manage relationships
-            const relationshipArrows = document.querySelectorAll('.relationship-arrow');
-            const resultCircles = document.querySelectorAll('.result-circle');
-            const resultTexts = document.querySelectorAll('[id^="percent-"]');
+        
+        // For standard layout, manage relationships
+        const relationshipArrows = document.querySelectorAll('.relationship-arrow');
+        const resultCircles = document.querySelectorAll('.result-circle');
+        const resultTexts = document.querySelectorAll('[id^="percent-"]');
+        
+        if (hasLargeDiceSet) {
+            // For large dice sets, hide all arrows by default
+            relationshipArrows.forEach(arrow => {
+                arrow.classList.add('hidden');
+            });
             
-            if (hasLargeDiceSet) {
-                // For large dice sets, hide all arrows by default
-                relationshipArrows.forEach(arrow => {
-                    arrow.classList.add('hidden');
-                });
-                
-                resultCircles.forEach(circle => {
-                    circle.classList.add('hidden');
-                });
-                
-                resultTexts.forEach(text => {
-                    text.classList.add('hidden');
-                });
-            } else {
-                // For small dice sets, show all relationships
-                relationshipArrows.forEach(arrow => {
-                    arrow.classList.remove('hidden');
-                });
-                
-                resultCircles.forEach(circle => {
-                    circle.classList.remove('hidden');
-                });
-                
-                resultTexts.forEach(text => {
-                    text.classList.remove('hidden');
-                });
-            }
+            resultCircles.forEach(circle => {
+                circle.classList.add('hidden');
+            });
+            
+            resultTexts.forEach(text => {
+                text.classList.add('hidden');
+            });
+        } else {
+            // For small dice sets, show all relationships
+            relationshipArrows.forEach(arrow => {
+                arrow.classList.remove('hidden');
+            });
+            
+            resultCircles.forEach(circle => {
+                circle.classList.remove('hidden');
+            });
+            
+            resultTexts.forEach(text => {
+                text.classList.remove('hidden');
+            });
         }
+        
         
         // Show all result rows
         const resultRows = document.querySelectorAll('.result-row');
@@ -1360,22 +1227,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Reset result counters
         results = {};
-        
-        // Check if we're using table layout
-        const isTableLayout = currentSet === 'georgescus_dice' || currentSet === 'youhuas_dice';
-        
-        if (isTableLayout) {
-            // Hide SVG for table layout
-            const container = document.querySelector('.dice-table-container');
-            if (container) {
-                const svg = container.querySelector('.relationship-svg');
-                if (svg) {
-                    svg.style.display = 'none';
-                    svg.innerHTML = ''; // Clear any arrows
-                }
-            }
-        }
-        
+
+
         if (set.beatRelationship) {
             // Reset based on beat relationships
             for (const firstKey in set.beatRelationship) {
