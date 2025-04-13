@@ -124,31 +124,7 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Die colors for sidebar */
-.dieA-color {
-    color: #ffb3b3;
-    background-color: rgba(255, 179, 179, 0.2) !important;
-}
-
-.dieB-color {
-    color: #b3e6b3;
-    background-color: rgba(179, 230, 179, 0.2) !important;
-}
-
-.dieC-color {
-    color: #b3b3ff;
-    background-color: rgba(179, 179, 255, 0.2) !important;
-}
-
-.dieD-color {
-    color: #ffe0a3;
-    background-color: rgba(255, 224, 163, 0.2) !important;
-}
-
-.dieE-color {
-    color: #dbb3ff;
-    background-color: rgba(219, 179, 255, 0.2) !important;
-}
+/* Die colors for sidebar are dynamically generated in JavaScript */
 
 .selected-die-current {
     text-align: center;
@@ -380,30 +356,7 @@ h1 {
     z-index: 30;
 }
 
-.die-node.dieA {
-    background-color: #ffe0e0;
-    border: 2px solid #ffb3b3;
-}
-
-.die-node.dieB {
-    background-color: #e0f8e0;
-    border: 2px solid #b3e6b3;
-}
-
-.die-node.dieC {
-    background-color: #e0e0ff;
-    border: 2px solid #b3b3ff;
-}
-
-.die-node.dieD {
-    background-color: #fff2d9;
-    border: 2px solid #ffe0a3;
-}
-
-.die-node.dieE {
-    background-color: #f0e0ff;
-    border: 2px solid #dbb3ff;
-}
+/* Die colors are dynamically generated in JavaScript */
 
 .die-key {
     font-weight: bold;

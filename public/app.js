@@ -83,10 +83,79 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // Function to assign colors to dice
+    function assignDiceColors() {
+        // Define a palette of visually comfortable colors
+        // Each color has a light background and darker border
+        const colorPalette = [
+            { bg: '#ffe0e0', border: '#ffb3b3', class: 'die-color-1' },  // Light red
+            { bg: '#e0f8e0', border: '#b3e6b3', class: 'die-color-2' },  // Light green
+            { bg: '#e0e0ff', border: '#b3b3ff', class: 'die-color-3' },  // Light blue
+            { bg: '#fff2d9', border: '#ffe0a3', class: 'die-color-4' },  // Light orange
+            { bg: '#f0e0ff', border: '#dbb3ff', class: 'die-color-5' },  // Light purple
+            { bg: '#e0f5ff', border: '#a8dfff', class: 'die-color-6' },  // Light sky blue
+            { bg: '#fff0f5', border: '#ffccd5', class: 'die-color-7' },  // Light pink
+            { bg: '#ffffd9', border: '#ffffb3', class: 'die-color-8' },  // Light yellow
+            { bg: '#e6f9ff', border: '#ccf2ff', class: 'die-color-9' },  // Light cyan
+            { bg: '#e6ffe6', border: '#ccffcc', class: 'die-color-10' }, // Lighter green
+            { bg: '#ffe6e6', border: '#ffcccc', class: 'die-color-11' }, // Lighter red
+            { bg: '#e6f2ff', border: '#cce6ff', class: 'die-color-12' }, // Light azure
+            { bg: '#ffebe6', border: '#ffd6cc', class: 'die-color-13' }, // Light salmon
+            { bg: '#e6fffa', border: '#ccfff5', class: 'die-color-14' }, // Light mint
+            { bg: '#f2e6ff', border: '#e6ccff', class: 'die-color-15' }, // Light lavender
+            { bg: '#ffe6f0', border: '#ffcce0', class: 'die-color-16' }, // Light rose
+            { bg: '#f0ffe6', border: '#e0ffcc', class: 'die-color-17' }, // Light lime
+            { bg: '#fff9e6', border: '#fff2cc', class: 'die-color-18' }, // Light gold
+            { bg: '#e6eeff', border: '#ccdeff', class: 'die-color-19' }, // Light periwinkle
+            { bg: '#ffefd9', border: '#ffdeb3', class: 'die-color-20' }  // Light peach
+        ];
+        
+        // Remove any existing color styles
+        const styleElement = document.getElementById('dice-dynamic-styles');
+        if (styleElement) {
+            styleElement.remove();
+        }
+        
+        // Create a new style element
+        const newStyle = document.createElement('style');
+        newStyle.id = 'dice-dynamic-styles';
+        
+        // Create CSS rules for each die in the current set
+        let cssRules = '';
+        const diceKeys = Object.keys(diceSets[currentSet].dice);
+        
+        diceKeys.forEach((key, index) => {
+            // Use the color palette, loop back to the beginning if we have more dice than colors
+            const colorIndex = index % colorPalette.length;
+            const color = colorPalette[colorIndex];
+            
+            // Create CSS rules for this die
+            cssRules += `.die-node.die${key} {
+                background-color: ${color.bg};
+                border: 2px solid ${color.border};
+            }\n`;
+            
+            // Create CSS rule for the details panel
+            cssRules += `.die${key}-color {
+                color: ${color.border};
+                background-color: ${color.bg} !important;
+            }\n`;
+        });
+        
+        // Add the CSS rules to the style element
+        newStyle.textContent = cssRules;
+        
+        // Add the style element to the head
+        document.head.appendChild(newStyle);
+    }
+    
     // Initialize the application
     function init() {
         // Set up current dice
         currentDice = diceSets[currentSet].dice;
+        
+        // Assign colors to dice
+        assignDiceColors();
         
         // Build sidebar dynamically
         buildSidebar();
@@ -369,6 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (diceSets[setName]) {
             currentSet = setName;
             currentDice = diceSets[setName].dice;
+            
+            // Reassign colors for the new dice set
+            assignDiceColors();
+            
             setupDiceSet(setName);
             resetResults();
             
