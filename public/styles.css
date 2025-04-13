@@ -263,19 +263,6 @@ h1 {
     overflow: auto; /* Add scrolling if dice circle is very large */
 }
 
-/* Table layout container for Georgescu's and Youhua's dice */
-.dice-table-container {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-    margin: 0 auto;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    overflow: hidden; /* Ensure SVG stays within bounds */
-}
-
 /* Grid layout for dice */
 .dice-grid {
     display: grid;
@@ -395,12 +382,12 @@ h1 {
 
 /* Hidden elements */
 .hidden {
-    opacity: 0.15;
+    opacity: 0;
     pointer-events: none;
 }
 
 .die-node.hidden {
-    opacity: 0.15;
+    opacity: 0;
     transform: scale(0.8);
     pointer-events: none;
 }
