@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 node.className = `die-node die${key}`;
                 node.id = `die${key}`;
                 node.innerHTML = `
-                    <div class="die-key">Die ${key}</div>
+                    <div class="die-key">${key}</div>
                     <div class="die-face">?</div>
                 `;
                 
@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 node.style.top = `${y}px`;
                 node.style.transform = 'translate(-50%, -50%)';
                 node.innerHTML = `
-                    <div class="die-key">Die ${key}</div>
+                    <div class="die-key">${key}</div>
                     <div class="die-face">?</div>
                 `;
                 
