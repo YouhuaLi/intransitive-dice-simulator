@@ -148,11 +148,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         highlightedDice = [];
         
-        // Show all dice and results initially
+        // Show all dice initially and reset arrow visibility
         showAllDiceAndResults();
         
         // Check if we're using table layout (Georgescu's or Youhua's dice)
         const isTableLayout = currentSet === 'georgescus_dice' || currentSet === 'youhuas_dice';
+        
+        // Check if we have a large dice set 
+        const hasLargeDiceSet = Object.keys(currentDice).length >= 10;
+        
+        // Log for debugging
+        console.log(`Toggle die selection: ${dieKey}, selected: ${selectedDice.join(',')}, highlighted: ${highlightedDice.join(',')}`);
         
         // If we have (players-1) dice selected, find the winning die
         if (selectedDice.length === playerCount - 1 && playerCount > 1) {
@@ -233,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Display notification
                 const notification = document.createElement('div');
                 notification.className = 'notification';
-                notification.textContent = `Based on the relationships, Die ${winningDie} beats all selected dice! Automatically rolling these dice.`;
+                notification.textContent = `Based on the relationships, ${winningDie} beats all selected dice! Automatically rolling these dice.`;
                 
                 // Append notification to container
                 const container = document.querySelector('.dice-container');
@@ -455,8 +461,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 
                 // Add click event to show die details and select dice
-                node.addEventListener('click', () => {
+                node.addEventListener('click', (event) => {
+                    // Prevent event bubbling
+                    event.stopPropagation();
+                    console.log(`Die clicked: ${key}`);
+                    // Show die details first
                     showDieDetails(key);
+                    // Then toggle selection
                     toggleDieSelection(key);
                 });
                 
@@ -527,8 +538,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 
                 // Add click event to show die details and select dice
-                node.addEventListener('click', () => {
+                node.addEventListener('click', (event) => {
+                    // Prevent event bubbling
+                    event.stopPropagation();
+                    console.log(`Die clicked: ${key}`);
+                    // Show die details first
                     showDieDetails(key);
+                    // Then toggle selection
                     toggleDieSelection(key);
                 });
                 
@@ -547,13 +563,85 @@ document.addEventListener('DOMContentLoaded', () => {
             svg.style.pointerEvents = 'none';
             container.appendChild(svg);
             
-            // Create relationship arrows
+            // Check if we have more than 10 dice
+            const hasLargeDiceSet = diceKeys.length >= 10;
+            
+            // For large dice sets, we'll only show arrows on hover
+            if (hasLargeDiceSet) {
+                // Add hover behavior for each die to show relevant arrows
+                diceKeys.forEach(dieKey => {
+                    const dieNode = diceElements[dieKey];
+                    
+                    // On mouse enter, show related arrows
+                    dieNode.addEventListener('mouseenter', () => {
+                        // Only handle hover behavior if we're not in selection mode
+                        if (selectedDice.length === 0 && highlightedDice.length === 0) {
+                            // Hide all arrows first
+                            svg.querySelectorAll('.relationship-arrow, .result-circle, [id^="percent-"]').forEach(el => {
+                                el.classList.add('hidden');
+                            });
+                        
+                            // Show outgoing arrows (dice that this die beats)
+                            if (set.beatRelationship && set.beatRelationship[dieKey]) {
+                                set.beatRelationship[dieKey].forEach(nextKey => {
+                                    const arrow = document.getElementById(`arrow-${dieKey}-${nextKey}`);
+                                    const circle = document.getElementById(`circle-${dieKey}-${nextKey}`);
+                                    const text = document.getElementById(`percent-${dieKey}-${nextKey}`);
+                                
+                                    if (arrow) arrow.classList.remove('hidden');
+                                    if (circle) circle.classList.remove('hidden');
+                                    if (text) text.classList.remove('hidden');
+                                });
+                        }
+                        
+                            // Show incoming arrows (dice that beat this die)
+                            if (set.beatRelationship) {
+                                for (const otherDie in set.beatRelationship) {
+                                    if (set.beatRelationship[otherDie].includes(dieKey)) {
+                                        const arrow = document.getElementById(`arrow-${otherDie}-${dieKey}`);
+                                        const circle = document.getElementById(`circle-${otherDie}-${dieKey}`);
+                                        const text = document.getElementById(`percent-${otherDie}-${dieKey}`);
+                                        
+                                        if (arrow) arrow.classList.remove('hidden');
+                                        if (circle) circle.classList.remove('hidden');
+                                        if (text) text.classList.remove('hidden');
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                    // On mouse leave, hide all arrows if we're not in a selection mode
+                    dieNode.addEventListener('mouseleave', () => {
+                        // Only hide if we don't have selected dice
+                        // and we're not in highlight mode (when winning die is shown)
+                        if (selectedDice.length === 0 && highlightedDice.length === 0) {
+                            svg.querySelectorAll('.relationship-arrow, .result-circle, [id^="percent-"]').forEach(el => {
+                                el.classList.add('hidden');
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // Create relationship arrows (initially hidden for large sets)
             if (set.beatRelationship) {
                 for (const firstKey in set.beatRelationship) {
                     const beatenDice = set.beatRelationship[firstKey];
                     
                     beatenDice.forEach(nextKey => {
                         drawArrow(svg, nodes[firstKey], nodes[nextKey], firstKey, nextKey, true);
+                        
+                        // For large dice sets, initially hide the arrows
+                        if (hasLargeDiceSet) {
+                            const arrow = document.getElementById(`arrow-${firstKey}-${nextKey}`);
+                            const circle = document.getElementById(`circle-${firstKey}-${nextKey}`);
+                            const text = document.getElementById(`percent-${firstKey}-${nextKey}`);
+                            
+                            if (arrow) arrow.classList.add('hidden');
+                            if (circle) circle.classList.add('hidden');
+                            if (text) text.classList.add('hidden');
+                        }
                     });
                 }
             } else {
@@ -563,6 +651,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const nextKey = diceKeys[(i + 1) % diceKeys.length];
                     
                     drawArrow(svg, nodes[firstKey], nodes[nextKey], firstKey, nextKey, true);
+                    
+                    // For large dice sets, initially hide the arrows
+                    if (hasLargeDiceSet) {
+                        const arrow = document.getElementById(`arrow-${firstKey}-${nextKey}`);
+                        const circle = document.getElementById(`circle-${firstKey}-${nextKey}`);
+                        const text = document.getElementById(`percent-${firstKey}-${nextKey}`);
+                        
+                        if (arrow) arrow.classList.add('hidden');
+                        if (circle) circle.classList.add('hidden');
+                        if (text) text.classList.add('hidden');
+                    }
                 }
             }
         }
@@ -922,7 +1021,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedDieContent.style.display === 'block') {
             // Get the selected die key from the title
             const selectedDieName = document.getElementById('selected-die-name').textContent;
-            const selectedDieKey = selectedDieName.replace('Die ', '');
+            // Just use the text directly as the key since we removed "Die" prefix
+            const selectedDieKey = selectedDieName;
             
             // Refresh die details
             if (selectedDieKey && diceElements[selectedDieKey]) {
@@ -1076,6 +1176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showAllDiceAndResults() {
         const allDiceKeys = Object.keys(currentDice);
         const isTableLayout = currentSet === 'georgescus_dice' || currentSet === 'youhuas_dice';
+        const hasLargeDiceSet = allDiceKeys.length >= 10;
         
         // Show all dice nodes
         allDiceKeys.forEach(key => {
@@ -1094,22 +1195,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         } else {
-            // For standard layout, show all relationships
+            // For standard layout, manage relationships
             const relationshipArrows = document.querySelectorAll('.relationship-arrow');
             const resultCircles = document.querySelectorAll('.result-circle');
             const resultTexts = document.querySelectorAll('[id^="percent-"]');
             
-            relationshipArrows.forEach(arrow => {
-                arrow.classList.remove('hidden');
-            });
-            
-            resultCircles.forEach(circle => {
-                circle.classList.remove('hidden');
-            });
-            
-            resultTexts.forEach(text => {
-                text.classList.remove('hidden');
-            });
+            if (hasLargeDiceSet) {
+                // For large dice sets, hide all arrows by default
+                relationshipArrows.forEach(arrow => {
+                    arrow.classList.add('hidden');
+                });
+                
+                resultCircles.forEach(circle => {
+                    circle.classList.add('hidden');
+                });
+                
+                resultTexts.forEach(text => {
+                    text.classList.add('hidden');
+                });
+            } else {
+                // For small dice sets, show all relationships
+                relationshipArrows.forEach(arrow => {
+                    arrow.classList.remove('hidden');
+                });
+                
+                resultCircles.forEach(circle => {
+                    circle.classList.remove('hidden');
+                });
+                
+                resultTexts.forEach(text => {
+                    text.classList.remove('hidden');
+                });
+            }
         }
         
         // Show all result rows
@@ -1423,7 +1540,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dieName = document.getElementById('selected-die-name');
         const dieValue = document.getElementById('selected-die-value');
         const dieFacesList = document.getElementById('selected-die-faces-list');
-        const dieStatsContent = document.getElementById('selected-die-stats-content');
+        //const dieStatsContent = document.getElementById('selected-die-stats-content');
         
         // Show die details and hide prompt
         dieDetailsContent.style.display = 'block';
@@ -1444,7 +1561,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Calculate and display statistics
-        dieStatsContent.innerHTML = '';
+        //dieStatsContent.innerHTML = '';
         
         // Calculate min, max, average
         const min = Math.min(...dieValues);
@@ -1483,7 +1600,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        dieStatsContent.innerHTML = statsHtml + winProbsHtml;
+        //dieStatsContent.innerHTML = statsHtml + winProbsHtml;
     }
     
     // Start the application by loading dice sets
