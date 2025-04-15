@@ -85,6 +85,7 @@ body {
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.1);
     margin-bottom: 20px;
+    min-height: 400px; /* Significantly increased height to display all face values */
 }
 
 .dice-info h3, .die-details h3 {
@@ -149,16 +150,17 @@ body {
 }
 
 #selected-die-faces-list {
+    width: 70px;
     list-style: none;
     padding: 0;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 5px;
     margin-top: 5px;
 }
 
 #selected-die-faces-list li {
-    width: 25px;
+    width: 70px;
     height: 25px;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
