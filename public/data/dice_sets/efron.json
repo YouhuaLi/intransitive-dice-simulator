@@ -65,7 +65,7 @@
                 "D"
             ]
         },
-        "info": "<p>Created by mathematician Bradley Efron, these four dice form a non-transitive set.</p><p>Die A beats B, Die B beats C, Die C beats D, but Die D beats A, creating a cycle.</p><p>Each die beats the next with a 2/3 (67%) probability.</p>",
+        "info": "<p>Created by American statistician Bradley Efron, these four dice form a non-transitive set.</p><p>Die A beats B, Die B beats C, Die C beats D, but Die D beats A, creating a cycle.</p><p>Each die beats the next with a 2/3 (67%) probability. </p>Details on <a href=\"https://en.wikipedia.org/wiki/Intransitive_dice#Efron's_dice\">Wikipedia</a>.</p>",
         "tooltips": {
             "A-B": "Die A beats Die B about 2/3 of the time (67%)",
             "B-C": "Die B beats Die C about 2/3 of the time (67%)",

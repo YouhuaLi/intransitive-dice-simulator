@@ -51,7 +51,7 @@
                 "B"
             ]
         },
-        "info": "<p>A custom set of 3 dice with calculated relationships between each die.</p><p>This set demonstrates intransitivity with the following cycle(s): A beats B, B beats C, C beats A</p>",
+        "info": "<p>iwin's dice are a set of nontransitive dice invented in 1975 by the physicist Michael Winkelmann. They consist of three different dice with faces bearing numbers from one to nine; opposite faces sum to nine, ten or eleven. The numbers on each die give the sum of 30 and have an arithmetic mean of five </p>Details on <a href=\"https://en.wikipedia.org/wiki/Miwin%27s_dice\">Wikipedia</a>.</p>",
         "tooltips": {
             "A-B": "Die A beats Die B about 47.2% of the time",
             "A-C": "Die A beats Die C about 44.4% of the time",

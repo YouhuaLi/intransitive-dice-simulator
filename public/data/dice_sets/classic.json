@@ -51,7 +51,7 @@
                 "C"
             ]
         },
-        "info": "<p>The classic set demonstrates the basic intransitive property with three simple dice.</p><p>Each die will win against the next with approximately 5/9 (56%) probability.</p>",
+        "info": "<p>The classic set demonstrates the basic intransitive property with three simple dice.</p><p>Each die will win against the next with approximately 5/9 (56%) probability. </p>Details on <a href=\"https://en.wikipedia.org/wiki/Intransitive_dice\">Wikipedia</a>. </p>",
         "tooltips": {
             "A-B": "Die A beats Die B about 5/9 of the time (56%)",
             "B-C": "Die B beats Die C about 5/9 of the time (56%)",

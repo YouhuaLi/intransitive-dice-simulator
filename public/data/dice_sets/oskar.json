@@ -163,7 +163,7 @@
                 "E"
             ]
         },
-        "info": "<p>A custom set of 7 dice with calculated relationships between each die.</p><p>This set demonstrates intransitivity - where relationships between dice form cycles rather than a linear hierarchy.</p>",
+        "info": "<p>A custom set of 7 dice with calculated relationships between each die.</p><p>This set demonstrates intransitivity - where relationships between dice form cycles rather than a linear hierarchy. </p>Details on <a href=\"https://en.wikipedia.org/wiki/Intransitive_dice#Oskar_dice\">Wikipedia</a>.</p>",
         "tooltips": {
             "A-B": "Die A beats Die B about 55.6% of the time",
             "A-C": "Die A beats Die C about 55.6% of the time",

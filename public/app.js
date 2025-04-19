@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let results = {};
     let selectedDice = [];
     let highlightedDice = [];
+    // Whether a simulation is currently running
+    let simulationRunning = false;
     
     // DOM Elements
     const diceContainer = document.getElementById('dice-container');
@@ -27,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'miwin',
                 'oskar',
                 'georgescus_dice',
-                'youhuas_dice'
+                'youhuali_dice'
             ];
             
             diceSets = {};
@@ -1225,6 +1227,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Reset all results
     function resetResults() {
+        // Stop any ongoing simulation
+        simulationRunning = false;
+        // Re-enable buttons
+        rollButton.disabled = false;
+        simulateButton.disabled = false;
+        // Clear simulation summary
+        const summaryContainer = document.getElementById('simulation-summary');
+        if (summaryContainer) summaryContainer.innerHTML = '';
         const diceKeys = Object.keys(currentDice);
         const set = diceSets[currentSet];
         
@@ -1332,9 +1342,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show results panel (was hidden via CSS)
         const resultsPanel = document.querySelector('.results');
         if (resultsPanel) resultsPanel.style.display = 'block';
-        // Disable buttons during simulation
+        // Start simulation
+        simulationRunning = true;
+        // Disable roll and simulate buttons during simulation (allow reset to interrupt)
         rollButton.disabled = true;
-        resetButton.disabled = true;
         simulateButton.disabled = true;
         
         let count = 0;
@@ -1391,6 +1402,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         function doSimulation() {
+            // Abort if simulation has been stopped
+            if (!simulationRunning) {
+                return;
+            }
             if (count < totalSimulations) {
                 const rolls = {};
                 
