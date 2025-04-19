@@ -9,6 +9,90 @@ document.addEventListener('DOMContentLoaded', () => {
     let highlightedDice = [];
     // Whether a simulation is currently running
     let simulationRunning = false;
+    // Internationalization translations
+    const translations = {
+        en: {
+            pageTitle: "Intransitive Dice Demonstration",
+            rollButton: "Roll Dice",
+            resetButton: "Reset",
+            simulateButton: "Simulate 1000 Rolls",
+            resultsTitle: "Results",
+            langLabel: "Language:",
+            dieDetailsTitle: "Die Details",
+            dieSelectPrompt: "Click on a die to see its details",
+            currentValue: "Current Value:",
+            faceValues: "Face Values:",
+            simulationProgress: "Simulation: {{count}}/{{total}}",
+            selectDiceSet: "Select Dice Set",
+            aboutCurrentSet: "About Current Set",
+            explanationTitle: "Intransitive Dice",
+            explanationText: "Intransitive dice are sets of dice where die A tends to beat die B, die B tends to beat die C, and die C tends to beat die A, creating a rock-paper-scissors-like cycle.",
+            userTip: "Pro tip: Click on dice to select them. When you select the appropriate number of dice based on the set's player count (highlighted in the sidebar), the system will highlight a die that can beat all your selections for simulation."
+        },
+        zh: {
+            pageTitle: "不可传递骰子演示",
+            rollButton: "掷骰子",
+            resetButton: "重置",
+            simulateButton: "模拟 1000 次",
+            resultsTitle: "结果",
+            langLabel: "语言：",
+            dieDetailsTitle: "骰子详情",
+            dieSelectPrompt: "点击骰子查看详情",
+            currentValue: "当前点数：",
+            faceValues: "面值：",
+            simulationProgress: "模拟：{{count}}/{{total}}",
+            selectDiceSet: "选择骰子集合",
+            aboutCurrentSet: "关于当前集合",
+            explanationTitle: "不可传递骰子",
+            explanationText: "不可传递骰子是指一组骰子，其中骰子A倾向于击败骰子B，骰子B倾向于击败骰子C，而骰子C倾向于击败骰子A，创造出类似石头-剪刀-布的循环。",
+            userTip: "小贴士：点击骰子可以选择它们。当您根据骰子集的玩家数量（在侧边栏中高亮显示）选择适当数量的骰子时，系统将高亮显示一个能够击败您所有选择的骰子进行模拟。"
+        }
+    };
+    // Current language (from localStorage or default en)
+    let currentLang = localStorage.getItem('lang') || 'en';
+    // Apply translations to static elements
+    function updateLanguage(lang) {
+        currentLang = lang;
+        // Update HTML lang attribute
+        document.documentElement.setAttribute('lang', lang);
+        localStorage.setItem('lang', lang);
+        // Update document title
+        if (translations[lang].pageTitle) document.title = translations[lang].pageTitle;
+        // Update all elements with data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const txt = translations[lang][key];
+            if (txt !== undefined) el.textContent = txt;
+        });
+        
+        // Rebuild sidebar to update dice set names to the current language
+        buildSidebar();
+        
+        // Update current set title and info for the current language
+        if (diceSets[currentSet]) {
+            const set = diceSets[currentSet];
+            // Update title with localized name if available
+            if (currentLang === 'zh' && set.name_zh) {
+                currentSetTitle.textContent = set.name_zh;
+            } else {
+                currentSetTitle.textContent = set.name;
+            }
+            
+            // Update info with localized info if available
+            const playerInfo = set.players ? 
+                `<p class="player-info"><strong>${currentLang === 'zh' ? '玩家数：' : 'Players:'}</strong> ${set.players} (${currentLang === 'zh' ? `选择 ${set.players - 1} 个骰子来找到一个获胜骰子` : `select ${set.players - 1} dice to find a winning die`})</p>` : '';
+            const setInfo = (currentLang === 'zh' && set.info_zh) ? set.info_zh : set.info;
+            currentDiceInfo.innerHTML = playerInfo + setInfo;
+        }
+    }
+    // Language selector setup
+    const languageSelector = document.getElementById('language-selector');
+    if (languageSelector) {
+        languageSelector.value = currentLang;
+        languageSelector.addEventListener('change', e => updateLanguage(e.target.value));
+    }
+    // Initial language application
+    updateLanguage(currentLang);
     
     // DOM Elements
     const diceContainer = document.getElementById('dice-container');
@@ -76,8 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const diceText = set.diceCount ? `${set.diceCount} dice` : '';
             const description = [playerText, diceText].filter(Boolean).join(', ');
             
+            // Use localized name if Chinese selected
+            const displayName = (currentLang === 'zh' && set.name_zh) ? set.name_zh : set.name;
             listItem.innerHTML = `
-                <h3>${set.name}</h3>
+                <h3>${displayName}</h3>
                 <p>${description}</p>
             `;
             
@@ -251,7 +337,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Display notification
                 const notification = document.createElement('div');
                 notification.className = 'notification';
-                notification.textContent = `Based on the relationships, ${winningDie} beats all selected dice! Automatically rolling these dice.`;
+                if (currentLang === 'zh') {
+                    notification.textContent = `根据关系图，${winningDie} 能击败所有选中的骰子！正在自动掷骰。`;
+                } else {
+                    notification.textContent = `Based on the relationships, ${winningDie} beats all selected dice! Automatically rolling these dice.`;
+                }
                 
                 // Append notification to container
                 const container = document.querySelector('.dice-container');
@@ -429,12 +519,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const set = diceSets[setName];
         
         // Update title and info
-        currentSetTitle.textContent = set.name;
+        // Use localized name if Chinese selected and name_zh exists
+        currentSetTitle.textContent = (currentLang === 'zh' && set.name_zh) ? set.name_zh : set.name;
         
         // Add player count information to the info display
         const playerInfo = set.players ? 
-            `<p class="player-info"><strong>Players:</strong> ${set.players} (select ${set.players - 1} dice to find a winning die)</p>` : '';
-        currentDiceInfo.innerHTML = playerInfo + set.info;
+            `<p class="player-info"><strong>${currentLang === 'zh' ? '玩家数：' : 'Players:'}</strong> ${set.players} (${currentLang === 'zh' ? `选择 ${set.players - 1} 个骰子来找到一个获胜骰子` : `select ${set.players - 1} dice to find a winning die`})</p>` : '';
+        // Use localized info if Chinese selected and info_zh exists
+        const setInfo = (currentLang === 'zh' && set.info_zh) ? set.info_zh : set.info;
+        currentDiceInfo.innerHTML = playerInfo + setInfo;
         
         // Clear containers
         diceContainer.innerHTML = '';
@@ -701,8 +794,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const resultRow = document.createElement('div');
                     resultRow.className = 'result-row';
                     resultRow.id = `result-${firstKey}-${nextKey}`;
+                    // Use vs or 对比 based on language
+                    const vsText = currentLang === 'zh' ? ' 对比 ' : ' vs ';
                     resultRow.innerHTML = `
-                        <div>${firstKey} vs ${nextKey}: <span id="${winKey1}">0</span> - <span id="${winKey2}">0</span></div>
+                        <div>${firstKey}${vsText}${nextKey}: <span id="${winKey1}">0</span> - <span id="${winKey2}">0</span></div>
                         <div class="win-percentage">(<span id="${firstKey}vs${nextKey}">0</span>%)</div>
                     `;
                     resultsContainer.appendChild(resultRow);
@@ -729,8 +824,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const resultRow = document.createElement('div');
                 resultRow.className = 'result-row';
                 resultRow.id = `result-${firstKey}-${nextKey}`;
+                // Use vs or 对比 based on language
+                const vsText = currentLang === 'zh' ? ' 对比 ' : ' vs ';
                 resultRow.innerHTML = `
-                    <div>${firstKey} vs ${nextKey}: <span id="${winKey1}">0</span> - <span id="${winKey2}">0</span></div>
+                    <div>${firstKey}${vsText}${nextKey}: <span id="${winKey1}">0</span> - <span id="${winKey2}">0</span></div>
                     <div class="win-percentage">(<span id="${firstKey}vs${nextKey}">0</span>%)</div>
                 `;
                 resultsContainer.appendChild(resultRow);
@@ -1370,7 +1467,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize simulation summary display
         const summaryContainer = document.getElementById('simulation-summary');
         if (summaryContainer) {
-            summaryContainer.innerHTML = `<p>Simulating ${totalSimulations} rolls...</p>`;
+            // Use translation for simulation progress
+            const header = translations[currentLang].simulationProgress
+                .replace('{{count}}', 0)
+                .replace('{{total}}', totalSimulations);
+            summaryContainer.innerHTML = `<p>${header}</p>`;
         }
         
         // If the number of highlighted dice equals the player count, show a special notification
@@ -1381,7 +1482,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Display notification about simulating with optimally chosen dice
             const notification = document.createElement('div');
             notification.className = 'notification';
-            notification.textContent = `Simulating ${totalSimulations} rolls with the optimal dice set!`;
+            if (currentLang === 'zh') {
+                notification.textContent = `使用最优骰子集模拟 ${totalSimulations} 次掷骰！`;
+            } else {
+                notification.textContent = `Simulating ${totalSimulations} rolls with the optimal dice set!`;
+            }
             
             // Append notification to container
             const container = document.querySelector('.dice-container');
@@ -1436,7 +1541,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (summaryContainer && highlightedDice.length > 0) {
                         const winningDie = highlightedDice[highlightedDice.length - 1];
                         const losingDice = highlightedDice.slice(0, -1);
-                        let html = `<p>Simulation: ${count}/${totalSimulations}</p><ul>`;
+                        // Use translation for simulation progress
+                        const header = translations[currentLang].simulationProgress
+                            .replace('{{count}}', count)
+                            .replace('{{total}}', totalSimulations);
+                        let html = `<p>${header}</p><ul>`;
                         losingDice.forEach(losingKey => {
                             const winKey = `${winningDie}vs${losingKey}Wins`;
                             const lossKey = `${losingKey}vs${winningDie}Wins`;
@@ -1444,7 +1553,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             const losses = results[lossKey] || 0;
                             const total = wins + losses;
                             const rate = total > 0 ? (wins / total * 100).toFixed(1) : '0.0';
-                            html += `<li>${winningDie} vs ${losingKey}: ${wins} - ${losses} (${rate}%)</li>`;
+                            // Use vs or 对比 based on language
+                            const vsText = currentLang === 'zh' ? ' 对比 ' : ' vs ';
+                            html += `<li>${winningDie}${vsText}${losingKey}: ${wins} - ${losses} (${rate}%)</li>`;
                         });
                         html += '</ul>';
                         summaryContainer.innerHTML = html;
@@ -1511,8 +1622,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dieDetailsContent.style.display = 'block';
         diePrompt.style.display = 'none';
         
-        // Update die name and current value
-        dieName.textContent = `Die ${dieKey}`;
+        // Update die name and current value with localized prefix
+        const dieNamePrefix = currentLang === 'zh' ? '骰子 ' : 'Die ';
+        dieName.textContent = `${dieNamePrefix}${dieKey}`;
         dieName.className = `die${dieKey}-color`;
         const currentFaceValue = diceElements[dieKey].querySelector('.die-face').textContent;
         dieValue.textContent = currentFaceValue !== '?' ? currentFaceValue : '?';
@@ -1533,15 +1645,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const max = Math.max(...dieValues);
         const avg = dieValues.reduce((sum, val) => sum + val, 0) / dieValues.length;
         
+        // Localize stat labels
+        const minLabel = currentLang === 'zh' ? '最小值：' : 'Minimum:';
+        const maxLabel = currentLang === 'zh' ? '最大值：' : 'Maximum:';
+        const avgLabel = currentLang === 'zh' ? '平均值：' : 'Average:';
+        
         const statsHtml = `
-            <p><strong>Minimum:</strong> ${min}</p>
-            <p><strong>Maximum:</strong> ${max}</p>
-            <p><strong>Average:</strong> ${avg.toFixed(2)}</p>
+            <p><strong>${minLabel}</strong> ${min}</p>
+            <p><strong>${maxLabel}</strong> ${max}</p>
+            <p><strong>${avgLabel}</strong> ${avg.toFixed(2)}</p>
         `;
         
         // Calculate and show win probabilities against other dice
-        let winProbsHtml = '<p><strong>Win Probabilities:</strong></p>';
+        // Localize win probabilities text
+        const winProbsTitle = currentLang === 'zh' ? '胜率：' : 'Win Probabilities:';
+        let winProbsHtml = `<p><strong>${winProbsTitle}</strong></p>`;
         if (set.beatRelationship && set.beatRelationship[dieKey]) {
+            // Get localized prefix for die name
+            const dieNamePrefix = currentLang === 'zh' ? '骰子 ' : 'Die ';
+            const vsText = currentLang === 'zh' ? '对比' : 'vs';
+            
             // Add wins
             set.beatRelationship[dieKey].forEach(otherDie => {
                 const winCount = results[`${dieKey}vs${otherDie}Wins`] || 0;
@@ -1549,7 +1672,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const total = winCount + lossCount;
                 const winPercent = total > 0 ? Math.round((winCount / total) * 100) : 0;
                 
-                winProbsHtml += `<p>vs Die ${otherDie}: <strong>${winPercent}%</strong> (${winCount}/${total})</p>`;
+                winProbsHtml += `<p>${vsText} ${dieNamePrefix}${otherDie}: <strong>${winPercent}%</strong> (${winCount}/${total})</p>`;
             });
             
             // Add losses
@@ -1560,7 +1683,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const total = winCount + lossCount;
                     const winPercent = total > 0 ? Math.round((winCount / total) * 100) : 0;
                     
-                    winProbsHtml += `<p>vs Die ${otherDie}: <strong>${winPercent}%</strong> (${winCount}/${total})</p>`;
+                    winProbsHtml += `<p>${vsText} ${dieNamePrefix}${otherDie}: <strong>${winPercent}%</strong> (${winCount}/${total})</p>`;
                 }
             }
         }
