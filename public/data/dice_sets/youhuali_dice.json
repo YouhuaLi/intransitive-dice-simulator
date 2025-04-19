@@ -1,6 +1,7 @@
 {
     "Youhua's Dice": {
         "name": "Youhua's Dice",
+        "name_zh": "大老李的骰子", 
         "players": 4,
         "diceCount": 19,
         "dice": {
@@ -7040,6 +7041,7 @@
             ]
         },
         "info": "<p>A custom set of 19 dice for 4 players discoverd by Youhua Li. Each die has 171 faces. Details on </p>Details on <a href=\"https://github.com/YouhuaLi/Intransitive_dice\">Github</a>.</p>",
+        "info_zh": "<p>一个为4个玩家定制的19个骰子集合，由大老李（李有华）发现。每个骰子有171个面。详情见</p>详情见<a href=\"https://github.com/YouhuaLi/Intransitive_dice\">Github</a>.</p>",
         "tooltips": {}
     }
 }

@@ -1,6 +1,7 @@
 {
     "miwin": {
         "name": "Miwin Dice",
+        "name_zh": "Miwin 骰子",
         "players": 2,
         "diceCount": 3,
         "dice": {
@@ -52,6 +53,7 @@
             ]
         },
         "info": "<p>Miwin's dice are a set of nontransitive dice invented in 1975 by the physicist Michael Winkelmann. They consist of three different dice with faces bearing numbers from one to nine; opposite faces sum to nine, ten or eleven. The numbers on each die give the sum of 30 and have an arithmetic mean of five. </p>Details on <a href=\"https://en.wikipedia.org/wiki/Miwin%27s_dice\">Wikipedia</a>.</p>",
+        "info_zh": "<p>Miwin 骰子是由物理学家 Michael Winkelmann 于 1975 年发明的一组非传递骰子。它们由三个不同的骰子组成，面上带有从一到九的数字；对面之和为九、十或十一。每个骰子上的数字总和为30，算术平均值为5。</p>详情请见<a href=\"https://en.wikipedia.org/wiki/Miwin%27s_dice\">维基百科</a></p>",
         "tooltips": {
             "A-B": "Die A beats Die B about 47.2% of the time",
             "A-C": "Die A beats Die C about 44.4% of the time",

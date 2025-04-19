@@ -1,6 +1,7 @@
 {
     "efron": {
         "name": "Efron's Dice",
+        "name_zh": "Efron 骰子",
         "players": 2,
         "diceCount": 4,
         "dice": {
@@ -66,6 +67,7 @@
             ]
         },
         "info": "<p>Created by American statistician Bradley Efron, these four dice form a non-transitive set.</p><p>Die A beats B, Die B beats C, Die C beats D, but Die D beats A, creating a cycle.</p><p>Each die beats the next with a 2/3 (67%) probability. </p>Details on <a href=\"https://en.wikipedia.org/wiki/Intransitive_dice#Efron's_dice\">Wikipedia</a>.</p>",
+        "info_zh": "<p>由美国统计学家布拉德利·艾夫隆（Bradley Efron）创建，这四个骰子形成一组非传递集。</p><p>骰子A击败B，骰子B击败C，骰子C击败D，但骰子D击败A，形成一个循环。</p><p>每个骰子以2/3（67%）的概率击败下一个骰子。</p>详情请参见<a href=\"https://en.wikipedia.org/wiki/Intransitive_dice#Efron's_dice\">维基百科</a></p>",
         "tooltips": {
             "A-B": "Die A beats Die B about 2/3 of the time (67%)",
             "B-C": "Die B beats Die C about 2/3 of the time (67%)",
