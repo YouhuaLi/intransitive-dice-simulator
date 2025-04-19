@@ -1,6 +1,6 @@
 {
     "Georgescu's Dice": {
-        "name": "Georgescu Dice",
+        "name": "Georgescu's Dice",
         "players": 4,
         "diceCount": 23,
         "dice": {
@@ -7944,7 +7944,7 @@
                 "B"
             ]
         },
-        "info": "<p>A custom set of 23 dice for 4 players discovered by Nicholas S Georgescu. Each die has 11 faces. Details on  </p>Details on <a href=\"https://github.com/NGeorgescu/math_problems/blob/main/intransitive.ipynb\">Github</a>. </p>",
+        "info": "<p>A custom set of 23 dice for 4 players discovered by Nicholas S Georgescu. Each die has 11 faces. </p>Details on <a href=\"https://github.com/NGeorgescu/math_problems/blob/main/intransitive.ipynb\">Github</a>. </p>",
         "tooltips": {}
     }
 }
