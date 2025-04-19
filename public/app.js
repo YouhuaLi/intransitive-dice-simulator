@@ -841,7 +841,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Roll all dice and update UI
     function rollAllDice() {
-        let diceToRoll;
+    // Show results panel (was hidden via CSS)
+    const resultsPanel = document.querySelector('.results');
+    if (resultsPanel) resultsPanel.style.display = 'block';
+    let diceToRoll;
         
         // If we have highlighted dice, use only those
         if (highlightedDice.length > 0) {
@@ -1326,6 +1329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Simulate multiple rolls
     function simulateRolls() {
+        // Show results panel (was hidden via CSS)
+        const resultsPanel = document.querySelector('.results');
+        if (resultsPanel) resultsPanel.style.display = 'block';
         // Disable buttons during simulation
         rollButton.disabled = true;
         resetButton.disabled = true;
@@ -1349,6 +1355,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Show all dice and results
             showAllDiceAndResults();
+        }
+        // Initialize simulation summary display
+        const summaryContainer = document.getElementById('simulation-summary');
+        if (summaryContainer) {
+            summaryContainer.innerHTML = `<p>Simulating ${totalSimulations} rolls...</p>`;
         }
         
         // If the number of highlighted dice equals the player count, show a special notification
@@ -1391,37 +1402,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Compare dice and update results
                 compareDice(rolls);
                 
-                // Update the display every 100 rolls
+                // Increment count and update display and summary every 100 rolls
+                count++;
                 if (count % 100 === 0) {
                     // Update the display for rolled dice
                     diceToRoll.forEach(key => {
                         const dieFace = diceElements[key].querySelector('.die-face');
-                        if (dieFace) {
-                            dieFace.textContent = rolls[key];
-                        }
+                        if (dieFace) dieFace.textContent = rolls[key];
                     });
-                    
                     // Keep other dice as question marks
                     Object.keys(currentDice).forEach(key => {
                         if (!diceToRoll.includes(key)) {
                             const dieFace = diceElements[key].querySelector('.die-face');
-                            if (dieFace) {
-                                dieFace.textContent = '?';
-                            }
+                            if (dieFace) dieFace.textContent = '?';
                         }
                     });
+                    // Update simulation summary for highlighted dice
+                    if (summaryContainer && highlightedDice.length > 0) {
+                        const winningDie = highlightedDice[highlightedDice.length - 1];
+                        const losingDice = highlightedDice.slice(0, -1);
+                        let html = `<p>Simulation: ${count}/${totalSimulations}</p><ul>`;
+                        losingDice.forEach(losingKey => {
+                            const winKey = `${winningDie}vs${losingKey}Wins`;
+                            const lossKey = `${losingKey}vs${winningDie}Wins`;
+                            const wins = results[winKey] || 0;
+                            const losses = results[lossKey] || 0;
+                            const total = wins + losses;
+                            const rate = total > 0 ? (wins / total * 100).toFixed(1) : '0.0';
+                            html += `<li>${winningDie} vs ${losingKey}: ${wins} - ${losses} (${rate}%)</li>`;
+                        });
+                        html += '</ul>';
+                        summaryContainer.innerHTML = html;
+                    }
                 }
-                
-                count++;
-                
-                // Use requestAnimationFrame to not block the UI
+                // Continue simulation
                 requestAnimationFrame(doSimulation);
             } else {
                 // Re-enable buttons after simulation
                 rollButton.disabled = false;
                 resetButton.disabled = false;
                 simulateButton.disabled = false;
-                
+                // Clear simulation summary to avoid duplicate final info
+                if (summaryContainer) {
+                    summaryContainer.innerHTML = '';
+                }
                 // Animate the dice after simulation completes
                 animateDice(diceToRoll.map(key => diceElements[key]));
             }
