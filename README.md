@@ -92,4 +92,4 @@ python -m SimpleHTTPServer
 
 Then visit `http://localhost:8000/public/` in your browser.
 
-Live version is at: `https://youhuali.github.io/intransitive-dice-simulator/public/`
+[Live Version](https://youhuali.github.io/intransitive-dice-simulator/public/)
